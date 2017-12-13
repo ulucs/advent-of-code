@@ -105,21 +105,3 @@ function solution2() {
     delay++;
   }
 }
-
-function solutionEtc(scanners) {
-  let time = 0;
-  let positions = [0];
-  const actions = [0, 1];
-  const isSafe = pos => scanners[pos] || scanners[pos].scanPoint !== 0;
-  while (pos < scanners.length) {
-    positions = uniq(
-      positions
-        .map(p => actions.map(a => a + p))
-        .reduce((a, b) => [...a, ...b])
-        .filter(isSafe)
-    );
-    if (positions.includes(scanners.length - 1)) return;
-  }
-}
-
-console.log(solution2());
