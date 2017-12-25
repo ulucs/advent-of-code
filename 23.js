@@ -83,8 +83,17 @@ function* messageParser(input = '', messagesIn = [], messagesOut = []) {
 const parser = messageParser(input);
 console.log(parser.next().value);
 
-console.log(
-  execSync("octave-cli --eval 'sum(1-isprime([109900:17:126901]))'")
-    .toString()
-    .match(/[0-9]+/)[0]
-);
+function isPrime(a = 0) {
+  let denum = 2;
+  while (denum < Math.sqrt(a)) {
+    if (Number.isInteger(a / denum)) return false;
+    denum++;
+  }
+  return true;
+}
+
+let ct = 0;
+for (let i = 109900; i <= 126901; i += 17) {
+  if (!isPrime(i)) ct++;
+}
+console.log(ct);
