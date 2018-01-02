@@ -30,15 +30,13 @@ class Screen
   end
 
   def print
-    puts(@data.map { |r| r.map { |a| a == 1 ? '#' : ' ' } * '' } * '
-')
+    puts(@data.map { |r| r.map { |a| a == 1 ? '#' : ' ' } * '' } * "\n")
   end
 end
 
 scr = Screen.new(6, 50)
 input.each_line do |line|
   x, y = line.scan(/[0-9]+/).map(&:to_i)
-  puts line
   case line.slice!(/ \S+/)
   when ' row'
     scr.rotaterow(x, y)
@@ -47,7 +45,7 @@ input.each_line do |line|
   else
     scr.rect(x, y)
   end
-  scr.print
 end
 
 puts scr.count
+scr.print
