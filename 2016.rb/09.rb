@@ -14,6 +14,19 @@ class String
     md.pre_match + repeated + pom.expand
   end
 
+  def expand_it
+    acc = ''
+    md = expander
+    until md.nil?
+      len, rep = md.captures.map(&:to_i)
+      ex_str = md.post_match
+      acc += md.pre_match
+      acc += ex_str.slice!(0, len) * rep
+      md = ex_str.expander
+    end
+    acc
+  end
+
   def rec_expand_len
     md = expander
     return length if md.nil?
@@ -24,5 +37,5 @@ class String
   end
 end
 
-puts input.expand.length
+puts input.expand_it.length
 puts input.rec_expand_len
