@@ -34,13 +34,15 @@ class Array
     reject!.each_with_index { |_, i| del.include? i }
   end
 
+  def el_init
+    [0, size.odd? ? 1 : 2, size * 2 / 3 - ((size % 3).zero? ? 0 : 1)]
+  end
+
   def eliminate3!
     rotate!(size / 2)
-    del = 0
-    els = size.odd? ? 1 : 2
-    ext = (size % 3).zero? ? 0 : 1
+    del, els, ext = el_init
     select!.each_with_index do |_, i|
-      next true if del > size * 2/3 - ext
+      next true if del > ext
       next true if ((i - els) % 3).zero?
       del += 1
       false
@@ -49,7 +51,12 @@ class Array
   end
 end
 
-elves = [*1..3014387]
+elves = [*1..3_014_387]
+elves.eliminate! until elves.size < 2
+
+puts elves.first
+
+elves = [*1..3_014_387]
 elves.eliminate3! until elves.size < 2
 
 puts elves.first
