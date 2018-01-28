@@ -47,34 +47,42 @@ class Parser
     @line = 0
   end
 
+  def do_line(inst, frm, to, frm_val, to_val)
+    case inst
+    when 'tgl'
+      @toggles[frm_val + @line] ^= true
+    when 'cpy'
+      @registers[to] = frm_val
+    when 'inc'
+      @registers[frm] += 1
+    when 'dec'
+      @registers[frm] -= 1
+    when 'jnz'
+      @line += to_val - 1 if frm_val != 0
+    end
+  end
+
+  def do_line_tg(inst, frm, to, frm_val, to_val)
+    case inst
+    when 'jnz' # cpy
+      @registers[to] = frm_val if to.is_a?(String)
+    when 'dec', 'tgl' # inc
+      @registers[frm] += 1
+    when 'inc' # dec
+      @registers[frm] -= 1
+    when 'cpy' # jnz
+      @line += to_val - 1 if frm_val != 0
+    end
+  end
+
   def parse_line(line)
     inst, frm, to = line.split ' '
     frm_val = frm.i? ? frm.to_i : @registers[frm]
     to_val = to.i? ? to.to_i : @registers[to] if to
     if @toggles[@line]
-      case inst
-      when 'jnz' # cpy
-        @registers[to] = frm_val if to.is_a?(String)
-      when 'dec', 'tgl' # inc
-        @registers[frm] += 1
-      when 'inc' # dec
-        @registers[frm] -= 1
-      when 'cpy' # jnz
-        @line += to_val - 1 if frm_val != 0
-      end
+      do_line_tg(inst, frm, to, frm_val, to_val)
     else
-      case inst
-      when 'tgl'
-        @toggles[frm_val + @line] ^= true
-      when 'cpy'
-        @registers[to] = frm_val
-      when 'inc'
-        @registers[frm] += 1
-      when 'dec'
-        @registers[frm] -= 1
-      when 'jnz'
-        @line += to_val - 1 if frm_val != 0
-      end
+      do_line(inst, frm, to, frm_val, to_val)
     end
     @line += 1
     puts @registers if @registers['d'].zero?
