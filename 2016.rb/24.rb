@@ -26,7 +26,7 @@ end
 
 class ASpace < Array
   def insert(_i, v)
-    v[:score] = v[:moves]
+    v[:score] = v[:map].score + v[:moves]
     insert_before = bsearch_index { |x, _| v[:score] < x[:score] }
     super(insert_before ? insert_before : -1, v)
   end
