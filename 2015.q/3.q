@@ -6,4 +6,4 @@ select count distinct hs from ([] hs: move dirs)
 
 sant: dirs where (count dirs)#1b,0b
 rsan: dirs where (count dirs)#0b,1b
-select count distinct hs from ([] hs: move sant,(move rsan))
+select count distinct hs from ([] hs: (move sant),move rsan)
