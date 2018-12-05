@@ -14,6 +14,19 @@ defmodule AoCUtils do
     |> String.trim
   end
 
+	def count_each list do
+		list 
+		|> Enum.reduce(%{}, &add_count/2)
+	end
+
+	def add_count item, map do
+		with {:ok, ct} <- Map.fetch(map, item) do
+			%{map | item => ct + 1}
+    else _ ->
+      Map.put(map, item, 1)
+    end
+	end
+
   def run_solutions day, f1 do
     IO.puts "Solution for the first star:"
     get_input(day)

@@ -1,19 +1,6 @@
 require AoCUtils
 
 defmodule Day2 do
-	def count_each list do
-		list 
-		|> Enum.reduce(%{}, &add_count/2)
-	end
-
-	def add_count item, map do
-		with {:ok, ct} <- Map.fetch(map, item) do
-			%{map | item => ct + 1}
-    else _ ->
-      Map.put(map, item, 1)
-    end
-	end
-
   def lhvstn str1, str2 do
     Enum.zip(
       String.to_charlist(str1),
@@ -26,7 +13,7 @@ defmodule Day2 do
     letter_cts = input
     |> String.split("\n")
     |> Enum.map(&String.to_charlist/1)
-    |> Enum.map(&count_each/1)
+    |> Enum.map(&AoCUtils.count_each/1)
     |> Enum.map(&Map.values/1)
     |> Enum.map(&Enum.uniq/1)
 
