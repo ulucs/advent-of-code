@@ -1,7 +1,7 @@
 require AoCUtils
 
 defmodule Day2 do
-  def lhvstn str1, str2 do
+  def lhvstn(str1, str2) do
     Enum.zip(
       String.to_charlist(str1),
       String.to_charlist(str2)
@@ -9,27 +9,31 @@ defmodule Day2 do
     |> Enum.count(fn {a, b} -> a != b end)
   end
 
-  def silver input do
-    letter_cts = input
-    |> String.split("\n")
-    |> Enum.map(&String.to_charlist/1)
-    |> Enum.map(&AoCUtils.count_each/1)
-    |> Enum.map(&Map.values/1)
-    |> Enum.map(&Enum.uniq/1)
+  def silver(input) do
+    letter_cts =
+      input
+      |> String.split("\n")
+      |> Enum.map(&String.to_charlist/1)
+      |> Enum.map(&AoCUtils.count_each/1)
+      |> Enum.map(&Map.values/1)
+      |> Enum.map(&Enum.uniq/1)
 
-    two_cts = letter_cts
-    |> Enum.count(fn cts -> Enum.member?(cts, 2) end)
-    three_cts = letter_cts
-    |> Enum.count(fn cts -> Enum.member?(cts, 3) end)
+    two_cts =
+      letter_cts
+      |> Enum.count(fn cts -> Enum.member?(cts, 2) end)
+
+    three_cts =
+      letter_cts
+      |> Enum.count(fn cts -> Enum.member?(cts, 3) end)
 
     two_cts * three_cts
   end
 
-  def gold input do
+  def gold(input) do
     boxes = String.split(input, "\n")
 
     boxes
-    |> Enum.filter(fn box -> 
+    |> Enum.filter(fn box ->
       boxes
       |> Enum.map(fn bx -> lhvstn(box, bx) end)
       |> Enum.member?(1)
