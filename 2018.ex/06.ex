@@ -27,8 +27,8 @@ defmodule Day6 do
   end
 
   def map_coords(x0, x1, y0, y1, f) do
-    Stream.flat_map(x0..x1, fn x ->
-      Stream.map(y0..y1, fn y ->
+    Enum.flat_map(x0..x1, fn x ->
+      Enum.map(y0..y1, fn y ->
         f.(x, y)
       end)
     end)
@@ -72,9 +72,8 @@ defmodule Day6 do
     points = parse_in(input)
     {x0, x1, y0, y1} = get_bounds(points)
 
-    get_total_dist(x0 - 10, x1 + 10, y0 - 10, y1 + 10, points)
-    |> Enum.filter(&(&1 < 10000))
-    |> Enum.count()
+    get_total_dist(x0, x1, y0, y1, points)
+    |> Enum.count(&(&1 < 10000))
   end
 end
 

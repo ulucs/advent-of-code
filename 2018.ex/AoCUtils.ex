@@ -46,15 +46,16 @@ defmodule AoCUtils do
 
   def run_solutions(day, f1, f2) do
     IO.puts("Solution for the first star:")
+    inp = get_input(day)
 
-    get_input(day)
+    inp
     |> f1.()
     |> IO.inspect()
 
     IO.puts("")
     IO.puts("Solution for the second star:")
 
-    get_input(day)
+    inp
     |> f2.()
     |> IO.inspect()
   end
