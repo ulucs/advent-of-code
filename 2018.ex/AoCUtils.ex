@@ -55,7 +55,7 @@ defmodule AoCUtils do
     IO.puts("")
     IO.puts("Solution for the second star:")
 
-    inp
+    get_input(day)
     |> f2.()
     |> IO.inspect()
   end
