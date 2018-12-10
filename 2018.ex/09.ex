@@ -82,7 +82,7 @@ defmodule Day9 do
 
   def gold(input) do
     [n, last] = parse_in(input)
-    solve([n, last * 100000])
+    solve([n, last * 100])
   end
 end
 
