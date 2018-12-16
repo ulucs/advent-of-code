@@ -2,7 +2,7 @@ require AoCUtils
 
 defmodule Day5 do
   def poly_reducer(next, [mid | tail]) do
-    if abs(next - mid) == 32 do
+    if abs(next - mid) == (?a - ?A) do
       tail
     else
       [next, mid | tail]
@@ -23,10 +23,10 @@ defmodule Day5 do
   def gold(input) do
     cinput = String.to_charlist(input)
 
-    65..90
+    ?A..?Z
     |> Enum.map(fn c ->
       cinput
-      |> Enum.reject(&(&1 == c || &1 - c == 32))
+      |> Enum.reject(&(&1 == c || &1 - c == (?a - ?A)))
       |> Enum.reduce([], &poly_reducer/2)
       |> Enum.count()
     end)

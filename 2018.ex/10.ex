@@ -75,5 +75,4 @@ defmodule Day10 do
   end
 end
 
-#AoCUtils.run_solutions('10', &Day10.silver/1)
-File.read!("day10big.txt") |> String.trim |> Day10.silver()
+AoCUtils.run_solutions('10', &Day10.silver/1)

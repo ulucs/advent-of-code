@@ -19,7 +19,7 @@ defmodule AoCUtils do
 
     body
     |> List.to_string()
-    |> String.trim()
+    |> String.replace_suffix("\n", "")
   end
 
   def count_each(list) do
@@ -36,6 +36,19 @@ defmodule AoCUtils do
     end
   end
 
+  def list_red([first | tail], f) do
+    [first | list_red(tail, first, f)]
+  end
+
+  def list_red([], _acc, _f) do
+    []
+  end
+
+  def list_red([first | tail], acc, f) do
+    fx = f.(first, acc)
+    [fx | list_red(tail, fx, f)]
+  end
+
   def run_solutions(day, f1) do
     IO.puts("Solution for the first star:")
 
@@ -45,16 +58,17 @@ defmodule AoCUtils do
   end
 
   def run_solutions(day, f1, f2) do
-    IO.puts("Solution for the first star:")
     inp = get_input(day)
 
+    IO.puts("########\n")
+    IO.puts('Day' ++ day)
+
+    IO.puts("Solution for the first star:")
     inp
     |> f1.()
     |> IO.inspect()
 
-    IO.puts("")
-    IO.puts("Solution for the second star:")
-
+    IO.puts("\nSolution for the second star:")
     get_input(day)
     |> f2.()
     |> IO.inspect()
