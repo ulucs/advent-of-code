@@ -64,11 +64,13 @@ defmodule AoCUtils do
     IO.puts('Day' ++ day)
 
     IO.puts("Solution for the first star:")
+
     inp
     |> f1.()
     |> IO.inspect()
 
     IO.puts("\nSolution for the second star:")
+
     get_input(day)
     |> f2.()
     |> IO.inspect()

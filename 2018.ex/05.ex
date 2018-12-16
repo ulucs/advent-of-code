@@ -2,7 +2,7 @@ require AoCUtils
 
 defmodule Day5 do
   def poly_reducer(next, [mid | tail]) do
-    if abs(next - mid) == (?a - ?A) do
+    if abs(next - mid) == ?a - ?A do
       tail
     else
       [next, mid | tail]
@@ -26,7 +26,7 @@ defmodule Day5 do
     ?A..?Z
     |> Enum.map(fn c ->
       cinput
-      |> Enum.reject(&(&1 == c || &1 - c == (?a - ?A)))
+      |> Enum.reject(&(&1 == c || &1 - c == ?a - ?A))
       |> Enum.reduce([], &poly_reducer/2)
       |> Enum.count()
     end)
