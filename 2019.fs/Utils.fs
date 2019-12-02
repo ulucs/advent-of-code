@@ -19,3 +19,5 @@ module Utils =
         getInput day
         |> splitLines
         |> Array.filter (fun a -> a.Length > 0)
+
+    let getBigBoy path = System.IO.File.ReadAllLines(path) |> Array.filter (fun a -> a.Length > 0)
