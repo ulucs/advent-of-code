@@ -31,6 +31,29 @@ module Day2 =
         |> List.find (fun (a, _) -> a = 19690720)
         |> (fun (_, j) -> j)
 
+    let machine =
+        OpcodeMachine.build (function
+            | 1 -> Some(Seq.fold (+) 0, 3)
+            | 2 -> Some(Seq.fold (*) 1, 3)
+            | _ -> None)
+
+    let silverM =
+        machine
+            [ 1, 12
+              2, 2 ]
+        >> Array.head
+
+    let goldM (input: int []) =
+        Utils.cartesian [ 1 .. 99 ] [ 1 .. 99 ]
+        |> List.map (fun (i, j) ->
+            (machine
+                [ 1, i
+                  2, j ], 100 * i + j))
+        |> List.map (fun (f, c) -> (f input |> Array.head, c))
+        |> List.find (fun (v, _) -> v = 19690720)
+        |> (fun (_, c) -> c)
 
     printf "%d\n" (silver input)
+    printf "%d\n" (silverM input)
     printf "%d\n" (gold input)
+    printf "%d\n" (goldM input)
