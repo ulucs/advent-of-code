@@ -2,7 +2,6 @@ namespace AoC
 
 module Day2 =
     let input = (Utils.getInput 2).Trim().Split(",") |> Array.map int
-    let inputC = Array.copy input
     let inputLen = Array.length input
 
     let rec comp (input: int []) pos =
@@ -16,20 +15,23 @@ module Day2 =
         | 2 -> comp input ((pos + 4) % inputLen)
         | _ -> input
 
-    let silver input =
+    let silver inputC =
+        let input = Array.copy inputC
         Array.set input 1 12
         Array.set input 2 2
 
-        comp input 0
-
-    printf "%d\n" (silver input).[0]
+        (comp input 0).[0]
 
     let gold (input: int []) =
-        for i in 1 .. 99 do
-            for j in 1 .. 99 do
-                let inp = Array.copy inputC
-                Array.set inp 1 i
-                Array.set inp 2 j
-                if ((comp inp 0).[0] = 19690720) then printf "%d" (100 * i + j)
+        Utils.cartesian [ 1 .. 99 ] [ 1 .. 99 ]
+        |> List.map (fun (i, j) ->
+            let inp = Array.copy input
+            Array.set inp 1 i
+            Array.set inp 2 j
+            ((comp inp 0).[0], 100 * i + j))
+        |> List.find (fun (a, _) -> a = 19690720)
+        |> (fun (_, j) -> j)
 
-    gold inputC
+
+    printf "%d\n" (silver input)
+    printf "%d\n" (gold input)

@@ -6,6 +6,8 @@ module Utils =
     let splitLines (text: string) = text.Split("\n")
     let trimString (text: string) = text.Trim()
 
+    let cartesian xs ys = xs |> List.collect (fun x -> ys |> List.map (fun y -> (x, y)))
+
     let getInput day =
         Http.RequestString
             (sprintf "https://adventofcode.com/2019/day/%d/input" day,
