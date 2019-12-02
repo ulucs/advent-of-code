@@ -9,14 +9,13 @@ module Day1 =
         |> Array.fold (+) 0
 
     let gold input =
+        let rec fuelRec rsum mass =
+            let fuel = mass / 3 - 2
+            if fuel <= 0 then rsum
+            else fuelRec (rsum + fuel) fuel
+
         input
-        |> Array.map
-            (Seq.unfold (fun fuel ->
-                if (fuel <= 0) then None
-                else Some(fuel, fuel / 3 - 2)))
-        |> Array.map (Seq.filter (fun a -> a > 0))
-        |> Array.map Seq.tail
-        |> Array.map (Seq.fold (+) 0)
+        |> Array.map (fuelRec 0)
         |> Array.fold (+) 0
 
     printf "%d\n" (silver input)
