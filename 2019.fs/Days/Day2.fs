@@ -6,13 +6,12 @@ module Day2 =
 
     let rec comp (input: int []) pos =
         match input.[pos] with
-        | 1 -> Array.set input input.[pos + 3] (input.[input.[pos + 1]] + input.[input.[pos + 2]])
-        | 2 -> Array.set input input.[pos + 3] (input.[input.[pos + 1]] * input.[input.[pos + 2]])
-        | _ -> ()
-
-        match input.[pos] with
-        | 1
-        | 2 -> comp input ((pos + 4) % inputLen)
+        | 1 ->
+            Array.set input input.[pos + 3] (input.[input.[pos + 1]] + input.[input.[pos + 2]])
+            comp input ((pos + 4) % inputLen)
+        | 2 ->
+            Array.set input input.[pos + 3] (input.[input.[pos + 1]] * input.[input.[pos + 2]])
+            comp input ((pos + 4) % inputLen)
         | _ -> input
 
     let silver inputC =
