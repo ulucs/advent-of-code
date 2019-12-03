@@ -3,6 +3,7 @@ namespace AoC
 open FSharp.Data
 
 module Utils =
+    let sessionCookie = System.IO.File.ReadAllText("../session.cookie").Trim()
     let splitLines (text: string) = text.Split("\n")
     let trimString (text: string) = text.Trim()
 
@@ -14,10 +15,7 @@ module Utils =
 
     let getInput day =
         Http.RequestString
-            (sprintf "https://adventofcode.com/2019/day/%d/input" day,
-             cookies =
-                 [ "session",
-                   "***REMOVED***" ])
+            (sprintf "https://adventofcode.com/2019/day/%d/input" day, cookies = [ "session", sessionCookie ])
         |> trimString
 
     let getInputLines day =
@@ -29,8 +27,6 @@ module Utils =
         Http.RequestString
             (sprintf "https://adventofcode.com/2019/day/%d/answer" day, httpMethod = "POST",
              body = HttpRequestBody.TextRequest(sprintf "answer=%A&level=%d" answer part),
-             cookies =
-                 [ "session",
-                   "***REMOVED***" ])
+             cookies = [ "session", sessionCookie ])
 
     let getBigBoy path = System.IO.File.ReadAllLines(path) |> Array.filter (fun a -> a.Length > 0)

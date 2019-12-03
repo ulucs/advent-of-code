@@ -1,18 +1,17 @@
 require AoCUtils
 
 defmodule Day17 do
-  def l({x, y}), do: {x-1, y}
-  def r({x, y}), do: {x+1, y}
-  def u({x, y}), do: {x, y-1}
-  def d({x, y}), do: {x, y+1}
+  def l({x, y}), do: {x - 1, y}
+  def r({x, y}), do: {x + 1, y}
+  def u({x, y}), do: {x, y - 1}
+  def d({x, y}), do: {x, y + 1}
 
-  def parse_in input do
+  def parse_in(input) do
     input
     |> String.split("\n")
     |> Enum.map(fn line ->
       [c1, v, c2, rs, re] = String.split(line, ~r{[=,\s.]+}, trim: true)
-      %{c1 => [String.to_integer(v)],
-        c2 => String.to_integer(rs)..String.to_integer(re)}
+      %{c1 => [String.to_integer(v)], c2 => String.to_integer(rs)..String.to_integer(re)}
     end)
     |> Enum.flat_map(fn %{"x" => xr, "y" => yr} ->
       Enum.flat_map(yr, fn y ->
@@ -21,20 +20,20 @@ defmodule Day17 do
         end)
       end)
     end)
-    |> MapSet.new
+    |> MapSet.new()
   end
 
-  def run_water %{c: cs, w: rw, a: aw, l: ls, r: rs} do
+  def run_water(%{c: cs, w: rw, a: aw, l: ls, r: rs}) do
     Enum.reduce(aw, [], fn a ->
       cond do
         d(a) in rw || d(a) in cs ->
-          
+          nil
       end
     end)
   end
 
-  def silver input do
-    map = %{c: parse_in(input), a: MapSet.new([{1, 500}]), w: MapSet.new}
+  def silver(input) do
+    map = %{c: parse_in(input), a: MapSet.new([{1, 500}]), w: MapSet.new()}
 
     {_, yx} = Enum.max_by(map.c, &elem(&1, 1))
   end
@@ -1400,4 +1399,4 @@ y=1765, x=577..596
 x=488, y=722..731
 x=433, y=460..470
 x=593, y=934..956
-x=415, y=478..487" |> Day17.silver |> IO.puts
+x=415, y=478..487" |> Day17.silver() |> IO.puts()

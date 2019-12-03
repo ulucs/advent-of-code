@@ -3,16 +3,15 @@ defmodule AoCUtils do
     Application.ensure_all_started(:inets)
     Application.ensure_all_started(:ssl)
 
+    session_cookie =
+      File.read!("../session.cookie")
+      |> String.to_charlist()
+
     {:ok, {{'HTTP/1.1', 200, 'OK'}, _headers, body}} =
       :httpc.request(
         :get,
         {'https://adventofcode.com/2018/day/' ++ day ++ '/input',
-         [
-           {
-             'Cookie',
-             'session=53616c7465645f5f4e6b2c8d3a18585ce674464c0154d6b8498b0dc87051709919ef22817a65511c73b48ec6b9dce69b'
-           }
-         ]},
+         [{'Cookie', 'session=' ++ session_cookie}]},
         [],
         []
       )
@@ -60,8 +59,8 @@ defmodule AoCUtils do
   def run_solutions(day, f1, f2) do
     inp = get_input(day)
 
-    IO.puts("########\n")
     IO.puts('Day' ++ day)
+    IO.puts("########\n")
 
     IO.puts("Solution for the first star:")
 

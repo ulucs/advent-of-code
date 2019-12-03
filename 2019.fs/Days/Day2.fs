@@ -1,5 +1,7 @@
 namespace AoC
 
+#nowarn "25"
+
 module Day2 =
     let input = (Utils.getInput 2).Trim().Split(",") |> Array.map int
     let inputLen = Array.length input

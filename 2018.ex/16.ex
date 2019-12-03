@@ -102,7 +102,7 @@ defmodule Day16 do
   end
 
   def silver(input) do
-    {fp, _} = parse_in input
+    {fp, _} = parse_in(input)
 
     ops =
       opcodes(%{})
@@ -117,18 +117,19 @@ defmodule Day16 do
           a == runcom(b, [op | rst])
         end)
         # |> MapSet.new()
-        |> Enum.count
+        |> Enum.count()
 
       poss + b2i(opts >= 3)
       # Map.update(poss, c, opts, &(MapSet.intersection(&1, opts)))
     end)
+
     # |> Map.values
     # |> Enum.filter(&(MapSet.size(&1) >= 3))
     # |> Enum.count
   end
 
-  def gold input do
-    {_, coms} = parse_in input
+  def gold(input) do
+    {_, coms} = parse_in(input)
 
     coms
     |> Enum.reduce(%{}, fn cms, reg ->

@@ -2,6 +2,8 @@ namespace AoC
 
 open Utils
 
+#nowarn "25"
+
 module Day3 =
     type dirs =
         | L
