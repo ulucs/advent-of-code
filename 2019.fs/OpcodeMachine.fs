@@ -5,6 +5,7 @@ module OpcodeMachine =
         seq {
             for i in indexes -> array.[array.[i]]
         }
+        |> List.ofSeq
 
     let rec exec getInstruction (input: int []) pos =
         let iLen = Array.length input

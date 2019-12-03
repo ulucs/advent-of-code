@@ -1,16 +1,14 @@
 namespace AoC
 
+open Utils
+
 module Day3 =
     type dirs =
         | L
         | U
 
-    let (|Prefix|_|) (p: string) (s: string) =
-        if s.StartsWith(p) then Some(s.Substring(p.Length))
-        else None
-
     let input =
-        (Utils.getInputLines 3)
+        (getInputLines 3)
         |> Array.map (fun s -> s.Trim().Split(","))
         |> Array.map
             (Array.map (function
@@ -24,16 +22,16 @@ module Day3 =
     let points =
         Array.fold (fun ((l, r) :: rest) (dir, dx: int) ->
             match dir with
-            | L -> Utils.cartesian [ l ] [ (r + dx) .. -sign dx .. (r + sign dx) ]
-            | R -> Utils.cartesian [ (l + dx) .. -sign dx .. (l + sign dx) ] [ r ]
+            | L -> cartesian [ l ] [ (r + dx) .. -sign dx .. (r + sign dx) ]
+            | R -> cartesian [ (l + dx) .. -sign dx .. (l + sign dx) ] [ r ]
             |> List.append
             <| rest) [ (0, 0) ]
 
     let pointsWithSteps =
         Array.fold (fun (((l, r), s: int) :: rest) (dir, dx: int) ->
             match dir with
-            | L -> Utils.cartesian [ l ] [ (r + dx) .. -sign dx .. (r + sign dx) ]
-            | R -> Utils.cartesian [ (l + dx) .. -sign dx .. (l + sign dx) ] [ r ]
+            | L -> cartesian [ l ] [ (r + dx) .. -sign dx .. (r + sign dx) ]
+            | R -> cartesian [ (l + dx) .. -sign dx .. (l + sign dx) ] [ r ]
             |> List.zip
             <| [ (s + abs (dx)) .. -1 .. (s + 1) ]
             |> List.append

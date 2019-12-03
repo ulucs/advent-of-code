@@ -33,8 +33,8 @@ module Day2 =
 
     let machine =
         OpcodeMachine.build (function
-            | 1 -> Some(Seq.fold (+) 0, 3)
-            | 2 -> Some(Seq.fold (*) 1, 3)
+            | 1 -> Some((fun [ x; y ] -> x + y), 3)
+            | 2 -> Some((fun [ x; y ] -> x * y), 3)
             | _ -> None)
 
     let silverM =

@@ -8,6 +8,10 @@ module Utils =
 
     let cartesian xs ys = xs |> List.collect (fun x -> ys |> List.map (fun y -> (x, y)))
 
+    let (|Prefix|_|) (p: string) (s: string) =
+        if s.StartsWith(p) then Some(s.Substring(p.Length))
+        else None
+
     let getInput day =
         Http.RequestString
             (sprintf "https://adventofcode.com/2019/day/%d/input" day,
