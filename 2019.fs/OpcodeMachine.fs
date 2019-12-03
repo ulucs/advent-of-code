@@ -12,8 +12,8 @@ module OpcodeMachine =
 
         let code = getInstruction input.[pos]
         match code with
-        | Some (op, argCount) f ->
-            Array.set input input.[pos + argCount] (f (getElemsTw [ (pos + 1) .. (pos + argCount - 1) ] input))
+        | Some(op, argCount) ->
+            Array.set input input.[pos + argCount] (op (getElemsTw [ (pos + 1) .. (pos + argCount - 1) ] input))
             runner input ((pos + argCount + 1) % iLen)
         | None -> input
 

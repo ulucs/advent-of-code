@@ -16,7 +16,6 @@ module Utils =
                    "***REMOVED***" ])
         |> trimString
 
-
     let getInputLines day =
         getInput day
         |> splitLines
@@ -25,7 +24,7 @@ module Utils =
     let postSolution day part answer =
         Http.RequestString
             (sprintf "https://adventofcode.com/2019/day/%d/answer" day, httpMethod = "POST",
-             body = sprintf "answer=%A&level=%d" answer part,
+             body = HttpRequestBody.TextRequest(sprintf "answer=%A&level=%d" answer part),
              cookies =
                  [ "session",
                    "***REMOVED***" ])
