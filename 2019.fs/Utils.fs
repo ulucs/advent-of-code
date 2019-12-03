@@ -22,4 +22,12 @@ module Utils =
         |> splitLines
         |> Array.filter (fun a -> a.Length > 0)
 
+    let postSolution day part answer =
+        Http.RequestString
+            (sprintf "https://adventofcode.com/2019/day/%d/answer" day, httpMethod = "POST",
+             body = sprintf "answer=%A&level=%d" answer part,
+             cookies =
+                 [ "session",
+                   "***REMOVED***" ])
+
     let getBigBoy path = System.IO.File.ReadAllLines(path) |> Array.filter (fun a -> a.Length > 0)
