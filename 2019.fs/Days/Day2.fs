@@ -35,8 +35,8 @@ module Day2 =
 
     let machine =
         OpcodeMachine.build (function
-            | 1 -> Some((fun [ x; y ] -> x + y), 3)
-            | 2 -> Some((fun [ x; y ] -> x * y), 3)
+            | 1 -> Some(OpcodeMachine.Write(fun (x :: (y :: _)) -> x + y), 3)
+            | 2 -> Some(OpcodeMachine.Write(fun (x :: (y :: _)) -> x * y), 3)
             | _ -> None)
 
     let silverM =
