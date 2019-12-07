@@ -51,10 +51,8 @@ module Day6 =
     let rec pathfind moveList searchItem seen posList dist =
         let neighbors =
             posList
-            |> List.ofSeq
-            |> List.map (findDefault [] moveList)
-            |> List.concat
-            |> Set.ofList
+            |> Set.map (findDefault [] moveList >> Set.ofList)
+            |> Set.unionMany
             |> Set.difference
             <| seen
 
