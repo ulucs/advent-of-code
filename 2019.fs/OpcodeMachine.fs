@@ -5,10 +5,20 @@ module OpcodeMachine =
         | Immediate
         | Parameter
 
+    type Status<'a> =
+        | Halted
+        | Waiting of ('a -> Status<'a>)
+        | Message of 'a * Status<'a>
+
     type InstructionType<'a> =
-        | Write of f: ('a list -> 'a)
-        | Read of f: ('a list -> unit)
-        | Jump of f: ('a list -> bool)
+        | Receive
+        | Write of operator: ('a list -> 'a)
+        | Send
+        | Jump of evaluate: ('a list -> bool)
+
+    let (|Equals|_|) arg x =
+        if (arg = x) then Some()
+        else None
 
     let getElemsTw modes indexes (array: int []) =
         let iModes =
@@ -44,19 +54,22 @@ module OpcodeMachine =
 
             let ixs = [ (pos + 1) .. (pos + argCount) ]
             let funcIns = getElemsTw modes ixs input
+
             match op with
+            | Receive ->
+                Waiting(fun msg ->
+                    Array.set input input.[pos + argCount] msg
+                    runner input ((pos + argCount + 1) % iLen))
             | Write(f) ->
                 Array.set input input.[pos + argCount] (f funcIns)
                 runner input ((pos + argCount + 1) % iLen)
-            | Read(f) ->
-                f funcIns
-                runner input ((pos + argCount + 1) % iLen)
+            | Send -> Message(List.head funcIns, runner input ((pos + argCount + 1) % iLen))
             | Jump(f) ->
                 match f funcIns with
                 | true -> runner input (List.last funcIns)
                 | false -> runner input ((pos + argCount + 1) % iLen)
 
-        | None -> input
+        | None -> Halted
 
     let build getInstruction editList (input: int []) =
         let inp = Array.copy input

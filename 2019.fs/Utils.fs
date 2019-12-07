@@ -9,6 +9,17 @@ module Utils =
 
     let cartesian xs ys = xs |> List.collect (fun x -> ys |> List.map (fun y -> (x, y)))
 
+    let rec distribute e =
+        function
+        | [] -> [ [ e ] ]
+        | x :: xs' as xs ->
+            (e :: xs) :: [ for xs in distribute e xs' -> x :: xs ]
+
+    let rec permute =
+        function
+        | [] -> [ [] ]
+        | e :: xs -> List.collect (distribute e) (permute xs)
+
     let memoized (fn: 'a -> 'b) =
         let memo = new System.Collections.Generic.Dictionary<'a, 'b>()
         fun a ->
