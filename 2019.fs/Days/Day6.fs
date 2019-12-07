@@ -20,7 +20,8 @@ module Day6 =
                 | Combined ->
                     [| (Planet(m), Planet(p))
                        (Planet(p), Planet(m)) |]
-                | Moons -> [| (Planet(p), Planet(m)) |])
+                | Moons -> [| (Planet(p), Planet(m)) |]
+            | _ -> [||])
         |> Array.concat
         |> Array.fold (fun dt (p, m) ->
             match (Map.tryFind p dt) with

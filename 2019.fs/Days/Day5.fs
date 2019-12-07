@@ -2,6 +2,8 @@ namespace AoC
 
 open Utils
 
+#nowarn "25"
+
 module Day5 =
     let input = (getInput 5).Split(",") |> Array.map int
 
