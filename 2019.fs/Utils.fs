@@ -9,6 +9,16 @@ module Utils =
 
     let cartesian xs ys = xs |> List.collect (fun x -> ys |> List.map (fun y -> (x, y)))
 
+    let memoized (fn: 'a -> 'b) =
+        let memo = new System.Collections.Generic.Dictionary<'a, 'b>()
+        fun a ->
+            match memo.TryGetValue(a) with
+            | true, b -> b
+            | _ ->
+                let b = fn a
+                memo.Add(a, b)
+                b
+
     let (|Prefix|_|) (p: string) (s: string) =
         if s.StartsWith(p) then Some(s.Substring(p.Length))
         else None
