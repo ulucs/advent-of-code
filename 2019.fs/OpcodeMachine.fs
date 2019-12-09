@@ -4,6 +4,7 @@ module OpcodeMachine =
     type Mode =
         | Immediate
         | Parameter
+        | Relative of int
 
     type Status<'a> =
         | Halted
@@ -11,16 +12,28 @@ module OpcodeMachine =
         | Message of 'a * Status<'a>
 
     type InstructionType<'a> =
+        | SetBase
         | Receive
         | Write of operator: ('a list -> 'a)
         | Send
         | Jump of evaluate: ('a list -> bool)
 
+    let dprint code x z =
+        if x = code then
+            printf "%A\n" z
+
     let (|Equals|_|) arg x =
         if (arg = x) then Some()
         else None
 
-    let getElemsTw modes indexes (array: int []) =
+    let i2bi (i: int) = bigint (i)
+
+    let getFromMem ix mem =
+        match Map.tryFind ix mem with
+        | None -> 0I
+        | Some(i) -> i
+
+    let getPositions modes indexes (array: Map<int, bigint>) =
         let iModes =
             modes
             |> List.take (List.length indexes)
@@ -28,21 +41,30 @@ module OpcodeMachine =
 
         seq {
             for (i, mode) in iModes ->
-                array.[match mode with
-                       | Parameter -> array.[i]
-                       | Immediate -> i]
+                match mode with
+                | Parameter -> getFromMem i array |> int
+                | Immediate -> i
+                | Relative(rb) -> rb + ((getFromMem i array) |> int)
+        }
+        |> List.ofSeq
+        |> List.map int
+
+    let getElements indexes (array: Map<int, bigint>) =
+        seq {
+            for ix in indexes -> getFromMem ix array
         }
         |> List.ofSeq
 
-
-    let rec exec getInstruction (input: int []) pos =
-        let iLen = Array.length input
+    let rec exec getInstruction rbase pos (input: Map<int, bigint>) =
+        let iLen = Map.count input
         let runner = exec getInstruction
+        let operator = getFromMem pos input
 
-        match getInstruction (input.[pos] % 100) with
+        //dprint 0 0 operatork
+        match getInstruction (operator % 100I |> int) with
         | Some(op, argCount) ->
             let modes =
-                (input.[pos] / 100).ToString()
+                (operator / 100I).ToString()
                 |> List.ofSeq
                 |> List.map (string >> int)
                 |> List.append [ 0; 0; 0; 0; 0 ]
@@ -50,29 +72,35 @@ module OpcodeMachine =
                 |> List.map (function
                     | 0 -> Parameter
                     | 1 -> Immediate
+                    | 2 -> Relative(rbase)
                     | _ -> Parameter)
 
             let ixs = [ (pos + 1) .. (pos + argCount) ]
-            let funcIns = getElemsTw modes ixs input
+            let positions = getPositions modes ixs input
+            let funcIns = getElements positions input
+            let writePos = List.last positions
 
             match op with
-            | Receive ->
-                Waiting(fun msg ->
-                    Array.set input input.[pos + argCount] msg
-                    runner input ((pos + argCount + 1) % iLen))
-            | Write(f) ->
-                Array.set input input.[pos + argCount] (f funcIns)
-                runner input ((pos + argCount + 1) % iLen)
-            | Send -> Message(List.head funcIns, runner input ((pos + argCount + 1) % iLen))
+            | SetBase -> runner (rbase + (int (List.last funcIns))) (pos + argCount + 1) input
+            | Receive -> Waiting(fun msg -> Map.add writePos msg input |> runner rbase (pos + argCount + 1))
+            | Write(f) -> Map.add writePos (f funcIns) input |> runner rbase (pos + argCount + 1)
+            | Send -> Message(List.head funcIns, runner rbase (pos + argCount + 1) input)
             | Jump(f) ->
                 match f funcIns with
-                | true -> runner input (List.last funcIns)
-                | false -> runner input ((pos + argCount + 1) % iLen)
+                | true -> runner rbase (int (List.last funcIns)) input
+                | false -> runner rbase (pos + argCount + 1) input
 
         | None -> Halted
 
     let build getInstruction editList (input: int []) =
-        let inp = Array.copy input
-        for (pos, value) in editList do
-            Array.set inp pos value
-        exec getInstruction inp 0
+        let inp =
+            input
+            |> Array.indexed
+            |> Map.ofArray
+
+        let inp2 =
+            editList
+            |> List.fold (fun map (p, v) -> Map.add p v map) inp
+            |> Map.map (fun k v -> bigint (v))
+
+        exec getInstruction 0 0 inp2

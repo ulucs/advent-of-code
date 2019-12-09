@@ -7,8 +7,8 @@ module Day7 =
 
     let b2i =
         function
-        | true -> 1
-        | false -> 0
+        | true -> 1I
+        | false -> 0I
 
     let machinery =
         OpcodeMachine.build (function
@@ -16,10 +16,11 @@ module Day7 =
             | 2 -> Some(Write(fun (x :: (y :: _)) -> x * y), 3)
             | 3 -> Some(Receive, 1)
             | 4 -> Some(Send, 1)
-            | 5 -> Some(Jump(fun (x :: _) -> x <> 0), 2)
-            | 6 -> Some(Jump(fun (x :: _) -> x = 0), 2)
+            | 5 -> Some(Jump(fun (x :: _) -> x <> 0I), 2)
+            | 6 -> Some(Jump(fun (x :: _) -> x = 0I), 2)
             | 7 -> Some(Write(fun (x :: (y :: _)) -> b2i (x < y)), 3)
             | 8 -> Some(Write(fun (x :: (y :: _)) -> b2i (x = y)), 3)
+            | 0 -> Some(Jump(fun _ -> true), 2)
             | _ -> None) []
 
     let combRunner input comb =
@@ -31,7 +32,7 @@ module Day7 =
             | Waiting(fn) -> Array.set machines i (fn (List.item i comb))
 
         match machines.[0] with
-        | Waiting(fn) -> Array.set machines 0 (fn 0)
+        | Waiting(fn) -> Array.set machines 0 (fn 0I)
 
         while loop do
             Array.tryFindIndex (function
@@ -50,7 +51,7 @@ module Day7 =
         | Message(i, Halted) -> i
 
     let gold input =
-        Utils.permute [ 5 .. 9 ]
+        Utils.permute [ 5I .. 9I ]
         |> List.map (combRunner input)
         |> List.max
 
