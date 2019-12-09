@@ -57,7 +57,6 @@ module OpcodeMachine =
 
     let rec exec getInstruction rbase pos (input: Map<int, bigint>) =
         let iLen = Map.count input
-        let runner = exec getInstruction
         let operator = getFromMem pos input
 
         //dprint 0 0 operatork
@@ -81,14 +80,15 @@ module OpcodeMachine =
             let writePos = List.last positions
 
             match op with
-            | SetBase -> runner (rbase + (int (List.last funcIns))) (pos + argCount + 1) input
-            | Receive -> Waiting(fun msg -> Map.add writePos msg input |> runner rbase (pos + argCount + 1))
-            | Write(f) -> Map.add writePos (f funcIns) input |> runner rbase (pos + argCount + 1)
-            | Send -> Message(List.head funcIns, runner rbase (pos + argCount + 1) input)
+            | SetBase -> exec getInstruction (rbase + (int (List.last funcIns))) (pos + argCount + 1) input
+            | Receive ->
+                Waiting(fun msg -> Map.add writePos msg input |> exec getInstruction rbase (pos + argCount + 1))
+            | Write(f) -> Map.add writePos (f funcIns) input |> exec getInstruction rbase (pos + argCount + 1)
+            | Send -> Message(List.head funcIns, exec getInstruction rbase (pos + argCount + 1) input)
             | Jump(f) ->
                 match f funcIns with
-                | true -> runner rbase (int (List.last funcIns)) input
-                | false -> runner rbase (pos + argCount + 1) input
+                | true -> exec getInstruction rbase (int (List.last funcIns)) input
+                | false -> exec getInstruction rbase (pos + argCount + 1) input
 
         | None -> Halted
 
