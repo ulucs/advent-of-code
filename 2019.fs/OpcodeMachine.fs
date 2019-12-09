@@ -26,6 +26,14 @@ module OpcodeMachine =
         if (arg = x) then Some()
         else None
 
+    let messagesToList m =
+        let rec lb acc msg =
+            function
+            | Message(v, ms) -> lb (v :: acc) ms
+            | _ -> acc
+
+        lb [] m
+
     let i2bi (i: int) = bigint (i)
 
     let getFromMem ix mem =
@@ -59,7 +67,6 @@ module OpcodeMachine =
         let iLen = Map.count input
         let operator = getFromMem pos input
 
-        //dprint 0 0 operatork
         match getInstruction (operator % 100I |> int) with
         | Some(op, argCount) ->
             let modes =
