@@ -26,13 +26,6 @@ module OpcodeMachine =
         if (arg = x) then Some()
         else None
 
-    let messagesToList m =
-        let rec lb acc msg =
-            function
-            | Message(v, ms) -> lb (v :: acc) ms
-            | _ -> acc
-
-        lb [] m
 
     let i2bi (i: int) = bigint (i)
 
