@@ -1,5 +1,7 @@
 namespace AoC
 
+#nowarn "25"
+
 module OpcodeMachine =
     type Mode =
         | Immediate
@@ -18,6 +20,25 @@ module OpcodeMachine =
         | Send
         | Jump of evaluate: ('a list -> bool)
 
+    let b2i =
+        function
+        | true -> 1I
+        | false -> 0I
+
+    let intructions =
+        function
+        | 1 -> Some(Write(fun (x :: (y :: _)) -> x + y), 3)
+        | 2 -> Some(Write(fun (x :: (y :: _)) -> x * y), 3)
+        | 3 -> Some(Receive, 1)
+        | 4 -> Some(Send, 1)
+        | 5 -> Some(Jump(fun (x :: _) -> x <> 0I), 2)
+        | 6 -> Some(Jump(fun (x :: _) -> x = 0I), 2)
+        | 7 -> Some(Write(fun (x :: (y :: _)) -> b2i (x < y)), 3)
+        | 8 -> Some(Write(fun (x :: (y :: _)) -> b2i (x = y)), 3)
+        | 9 -> Some(SetBase, 1)
+        | 0 -> Some(Jump(fun _ -> true), 2)
+        | 99 -> None
+
     let dprint code x z =
         if x = code then
             printf "%A\n" z
@@ -26,8 +47,12 @@ module OpcodeMachine =
         if (arg = x) then Some()
         else None
 
-
     let i2bi (i: int) = bigint (i)
+
+    let rec getMessages st =
+        match st with
+        | Message(a, rest) -> a :: (getMessages rest)
+        | _ -> []
 
     let getFromMem ix mem =
         match Map.tryFind ix mem with
@@ -92,7 +117,7 @@ module OpcodeMachine =
 
         | None -> Halted
 
-    let build getInstruction editList (input: int []) =
+    let build getInstruction editList (input: bigint []) =
         let inp =
             input
             |> Array.indexed
@@ -101,6 +126,6 @@ module OpcodeMachine =
         let inp2 =
             editList
             |> List.fold (fun map (p, v) -> Map.add p v map) inp
-            |> Map.map (fun k v -> bigint (v))
+            |> Map.map (fun k v -> v)
 
         exec getInstruction 0 0 inp2

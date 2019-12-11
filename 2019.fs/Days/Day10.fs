@@ -21,15 +21,13 @@ module Day10 =
     let input = Utils.getInputLines 10
 
     let planetLocs =
-        let yMax = Array.length input
-        input
-        |> Array.indexed
-        |> Array.map (fun (i, l) ->
+        Array.indexed
+        >> Array.map (fun (i, l) ->
             Array.ofSeq l
             |> Array.indexed
             |> Array.filter (fun (_, p) -> p = '#')
             |> Array.map (fun (j, _) -> (float j, float i)))
-        |> Array.concat
+        >> Array.concat
 
     let angleSorter (x, y) =
         match (x, -y) with
@@ -65,9 +63,11 @@ module Day10 =
             | Some(t) -> (t, (x, y), d) :: pts, Map.add (x, y) (t + 1) turnCounts) ([], Map.empty)
         |> (fun (x, _) -> x)
         |> List.sortBy (fun (t, r, d) -> t, angleSorter r)
-        |> List.map (fun (_, r, d) -> unNormed r d)
-        |> List.map (fun (x, y) -> x + ox, y + oy)
         |> List.item 199
+        |> (fun (_, r, d) -> unNormed r d)
+        |> (fun (x, y) -> x + ox, y + oy)
+
+        List.con
 
     silver planetLocs
     |> printf "%A\n"
