@@ -10,7 +10,7 @@
     <Compile Include="Utils.fs" />
     <Compile Include="OpcodeMachine.fs" />
     <Compile Include="AStar.fs" />
-    <Compile Include="Days/Day12.fs" />
+    <Compile Include="Days/Day15.fs" />
   </ItemGroup>
 
   <ItemGroup>
