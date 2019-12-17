@@ -10,11 +10,12 @@
     <Compile Include="Utils.fs" />
     <Compile Include="OpcodeMachine.fs" />
     <Compile Include="AStar.fs" />
-    <Compile Include="Days/Day15.fs" />
+    <Compile Include="Days/Day16.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FSharp.Data" Version="3.3.2" />
+    <PackageReference Include="MathNet.Numerics.FSharp" Version="4.9.0" />
   </ItemGroup>
 
 </Project>
