@@ -118,14 +118,14 @@ module OpcodeMachine =
         | None -> Halted
 
     let build getInstruction editList (input: bigint []) =
-        let inp =
-            input
+        let inp = Array.copy input
+
+        for (i, j) in editList do
+            Array.set inp i j
+
+        let inMap =
+            inp
             |> Array.indexed
             |> Map.ofArray
 
-        let inp2 =
-            editList
-            |> List.fold (fun map (p, v) -> Map.add p v map) inp
-            |> Map.map (fun k v -> v)
-
-        exec getInstruction 0 0 inp2
+        exec getInstruction 0 0 inMap
