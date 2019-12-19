@@ -54,6 +54,11 @@ module OpcodeMachine =
         | Message(a, rest) -> a :: (getMessages rest)
         | _ -> []
 
+    let rec getMessagesAndStatus st list =
+        match st with
+        | Message(a, rest) -> getMessagesAndStatus rest (a :: list)
+        | _ -> (List.rev list), st
+
     let getFromMem ix mem =
         match Map.tryFind ix mem with
         | None -> 0I
