@@ -4,7 +4,7 @@ open FSharp.Data
 
 module Utils =
     let sessionCookie = System.IO.File.ReadAllText("../session.cookie").Trim()
-    let splitLines (text: string) = text.Split("\n")
+    let splitLines (text: string) = text.Split("\n") |> Array.filter ((=) "" >> (not))
     let trimString (text: string) = text.Trim()
     let bigint (x: int) = bigint x
 
@@ -35,10 +35,11 @@ module Utils =
         if s.StartsWith(p) then Some(s.Substring(p.Length))
         else None
 
-    let getInput day =
+    let getInputRaw day =
         Http.RequestString
             (sprintf "https://adventofcode.com/2019/day/%d/input" day, cookies = [ "session", sessionCookie ])
-        |> trimString
+
+    let getInput = getInputRaw >> trimString
 
     let getIntcode day = (getInput day).Split(",") |> Array.map (int >> bigint)
 
