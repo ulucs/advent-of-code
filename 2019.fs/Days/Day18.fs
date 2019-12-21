@@ -9,8 +9,17 @@ module Day19 =
     let addTup (a, b) (x, y) = (a + x, b + y)
     let mDist (a, b) (x, y) = abs (a - x) + abs (b - y)
     let second (_, y) = y
+    let second3 (_, y, _) = y
+    let firstThird (x, _, z) = x, z
     let lower (c: char) = char ((int c) + 32)
+    let upper (c: char) = char ((int c) - 32)
     let rev f x y = f y x
+    let uniq = Set.ofList >> Set.toList
+
+    let listSet i it =
+        List.mapi (fun j k ->
+            if i = j then it
+            else k)
 
     let dirs =
         [ 1, 0
@@ -18,137 +27,141 @@ module Day19 =
           -1, 0
           0, -1 ]
 
-    let getFrontier (map: char [,]) loc keys =
-        List.map (addTup loc) dirs
-        |> List.filter (fun (i, j) ->
-            let b = map.[i, j]
-            b = '.' || b = '@' || (b <= 'z' && b >= 'a') || Set.contains (lower b) keys)
+    type SearchStep = char * (int * int) * int * Set<char>
 
-    let scorer keyIxs (loc, steps, keys) =
-        (keyIxs
-         |> Map.filter (fun k _ -> not (Set.contains k keys))
-         |> Map.map (fun _ v -> mDist v loc)
-         |> Map.toList
-         |> List.unzip
-         |> second
-         |> (fun l ->
-         if List.isEmpty l then [ 0 ]
-         else l)
-         |> List.min)
-        + steps
+    type SearchPoint =
+        | Halfway of char * (int * int) * int * Set<char>
+        | Final of char * char * (int * int) * int * Set<char>
 
-    let findStart map =
-        let mutable loc = (0, 0)
-        Array2D.iteri (fun i j b ->
-            if b = '@' then loc <- (i, j)) map
-        loc
-
-    let getKeyIxs map =
-        let mutable keyixs = Map.empty
-        Array2D.iteri (fun i j b ->
-            if b <= 'z' && b >= 'a' then keyixs <- Map.add b (i, j) keyixs) map
-        keyixs
-
-    let makeNext (map: char [,]) steps keys loc =
-        let (i, j) = loc
-        let b = map.[i, j]
-        (loc, steps + 1,
-         (if b <= 'z' && b >= 'a' then Set.add b keys
-          else keys))
-
-    let rec aSearch map keyCt searchList =
-        match AStar.pop searchList with
-        | Some(ns, rest) ->
-            let (loc, steps, keys) = ns
-            if (Set.count keys) = keyCt then
-                ns
-            else
-                let ft = getFrontier map loc keys |> List.map (makeNext map steps keys)
-                aSearch map keyCt (AStar.addList rest ft)
-
-        | None -> ((0, 0), 0, Set.empty)
-
-    let norm (l, _, k) = (l, k)
-
-    let silver input =
-        let keyIxs = getKeyIxs input
-        let sList = AStar.newList (scorer keyIxs) norm
-        aSearch input (Map.count keyIxs) (AStar.add sList (findStart input, 0, Set.empty))
-
-    let update map =
-        let (x, y) = findStart map
-        let mutable startPoints = []
+    let update (map: char [,]) =
+        let x, y = 40, 40
         for i in [ (x - 1) .. (x + 1) ] do
             for j in [ (y - 1) .. (y + 1) ] do
                 map.[i, j] <- '#'
 
-        for i in [ (x - 1)
-                   (x + 1) ] do
-            for j in [ (y - 1)
-                       (y + 1) ] do
-                map.[i, j] <- '@'
-                startPoints <- (i, j) :: startPoints
+        for a, i in List.indexed
+                        [ (x - 1)
+                          (x + 1) ] do
+            for b, j in List.indexed
+                            [ (y - 1)
+                              (y + 1) ] do
+                map.[i, j] <- char (2 * a + b + 48)
 
-        map, startPoints
+        map
 
-    let listSet n item list =
-        List.mapi (fun i t ->
-            if i = n then item
-            else t) list
 
-    let getMultiFrontier map locs keys =
-        [ 0 .. 3 ]
-        |> List.map (fun i -> getFrontier map (List.item i locs) keys |> List.map (fun t -> listSet i t locs, i))
-        |> List.concat
-
-    let makeNextMulti (map: char [,]) steps keys (locs, last) =
-        let newKeys =
-            List.fold (fun ks (i, j) ->
+    let getNear (map: char [,]) =
+        function
+        | Halfway(begi, loc, steps, reqs) ->
+            List.map (addTup loc) dirs
+            |> List.filter (fun (i, j) -> map.[i, j] <> '#')
+            |> List.map (fun (i, j) ->
                 let b = map.[i, j]
-                if b <= 'z' && b >= 'a' then Set.add b ks
-                else ks) keys locs
-        (locs, steps + 1, newKeys, last)
+                if b >= 'A' && b <= 'Z' then Halfway(begi, (i, j), steps + 1, Set.add b reqs)
+                else if b >= 'a' && b <= 'z' then Final(b, begi, (i, j), steps + 1, reqs)
+                else Halfway(begi, (i, j), steps + 1, reqs))
+        | _ -> []
 
-    let rec aSearchMulti (map: char [,]) keyIxs searchList =
-        match AStar.pop searchList with
-        | Some(ns, rest) ->
-            let (locs, steps, keys, last) = ns
-            if (Set.count keys) = Map.count keyIxs then
-                ns
+    let withDefault def =
+        function
+        | Some(i) -> i
+        | None -> def
+
+    let normPaths =
+        function
+        | Halfway(begi, loc, steps, recs) -> begi, loc
+        | Final(_, begi, loc, _, _) -> begi, loc
+
+    let ftohalf =
+        function
+        | Final(_, b, l, s, r) -> Halfway(b, l, s, r)
+        | i -> i
+
+    let rec mapPathsWithReqs map paths frontier seen =
+        let roadmap =
+            List.map (getNear map) frontier
+            |> List.concat
+            |> List.filter
+                (normPaths
+                 >> rev Set.contains seen
+                 >> (not))
+            |> List.groupBy (function
+                | Halfway(_) -> 'h'
+                | Final(_) -> 'f')
+            |> Map.ofList
+
+        let finals = Map.tryFind 'f' roadmap |> withDefault []
+
+        let newPaths =
+            List.fold (fun pths k ->
+                match k with
+                | Final(ed, f, _, s, reqs) ->
+                    let m1 = Map.tryFind f pths |> withDefault Map.empty
+                    let l1 = (s, reqs) :: (Map.tryFind ed m1 |> withDefault [])
+                    Map.add f (Map.add ed (uniq l1) m1) pths
+                | _ -> pths) paths finals
+
+        match Map.tryFind 'h' roadmap with
+        | None -> newPaths
+        | Some(l) ->
+            let nl = List.append l (List.map ftohalf finals)
+
+            let newSeen =
+                List.map normPaths nl
+                |> Set.ofList
+                |> Set.union seen
+
+            mapPathsWithReqs map newPaths nl newSeen
+
+    let initMapping map =
+        let mutable starts = []
+        Array2D.iteri
+            (fun i j b ->
+            if b = '@' || (b >= 'a' && b <= 'z') || (b >= '0' && b <= '3') then
+                starts <- Halfway(b, (i, j), 0, Set.empty) :: starts) map
+
+        mapPathsWithReqs map Map.empty starts (List.map normPaths starts |> Set.ofList)
+
+    let getFrontier paths (loc, step, keys) =
+        Map.find loc paths
+        |> Map.toList
+        |> List.map (fun (nk, lines) -> List.map (fun (dsts, reqs) -> (nk, dsts, reqs)) lines)
+        |> List.concat
+        |> List.filter (fun (nk, _, _) -> Set.contains nk keys |> (not))
+        |> List.filter (fun (_, _, reqs) -> Set.difference (Set.map lower reqs) keys |> Set.isEmpty)
+        |> List.map (fun (nk, dsts, _) -> (nk, step + dsts, Set.add nk keys))
+
+    let rec exploreSilver paths finalSum alist =
+        match AStar.pop alist with
+        | None -> 0
+        | Some((loc, steps, keys), rest) ->
+            if Set.count keys = finalSum then steps
+            else exploreSilver paths finalSum (AStar.addList rest (getFrontier paths (loc, steps, keys)))
+
+    let silver input =
+        let paths = initMapping input
+        let alist = AStar.newList second3 firstThird
+        exploreSilver paths 26 (AStar.add alist ('@', 0, Set.empty))
+
+    let mergeFront i locs (nl, s, k) = (listSet i nl locs, s, k)
+
+    let rec exploreGold paths finalSum alist =
+        match AStar.pop alist with
+        | None -> 0
+        | Some((locs, steps, keys), rest) ->
+            if Set.count keys = finalSum then
+                steps
             else
-                let onKey =
-                    let (i, j) = List.item (min last 3) locs
-                    let b = map.[i, j]
-                    b <= 'z' && b >= 'a'
-
-                let ft =
-                    if onKey || last = 4 then getMultiFrontier map locs keys
-                    else getFrontier map (List.item last locs) keys |> List.map (fun t -> listSet last t locs, last)
-                    |> List.map (makeNextMulti map steps keys)
-                //printfn "%A" ft
-                aSearchMulti map keyIxs (AStar.addList rest ft)
-        | None -> ([ 0, 0 ], 0, Set.empty, 0)
-
-    let scorerMulti keyIxs (locs, steps, keys, l) =
-        (keyIxs
-         |> Map.filter (fun k _ -> not (Set.contains k keys))
-         |> Map.map (fun _ v -> List.map (mDist v) locs |> List.min)
-         |> Map.toList
-         |> List.unzip
-         |> second
-         |> (fun l ->
-         if List.isEmpty l then [ 0 ]
-         else l)
-         |> List.min)
-        + steps
-
-    let normm (l, _, k, _) = l, k
+                List.mapi (fun i l -> getFrontier paths (l, steps, keys), i) locs
+                |> List.map (fun (fl, i) -> List.map (mergeFront i locs) fl)
+                |> List.concat
+                |> AStar.addList rest
+                |> exploreGold paths finalSum
 
     let gold input =
-        let (nMap, starts) = update input
-        let keyIxs = getKeyIxs nMap
-        let sList = AStar.newList (scorerMulti keyIxs) normm
-        aSearchMulti nMap keyIxs (AStar.add sList (starts, 0, Set.empty, 4))
-
+        let nmap = update input
+        let paths = initMapping nmap
+        let alist = AStar.newList second3 firstThird
+        exploreGold paths 26 (AStar.add alist ([ '0'; '1'; '2'; '3' ], 0, Set.empty))
 
     printfn "%A" (gold input)
