@@ -49,20 +49,32 @@ module OpcodeMachine =
 
     let i2bi (i: int) = bigint (i)
 
-    let rec getMessages st =
-        match st with
-        | Message(a, rest) -> a :: (getMessages rest)
-        | _ -> []
-
     let rec getMessagesAndStatus st list =
         match st with
         | Message(a, rest) -> getMessagesAndStatus rest (a :: list)
         | _ -> (List.rev list), st
 
+    let getMessages st =
+        getMessagesAndStatus st []
+
     let getFromMem ix mem =
         match Map.tryFind ix mem with
         | None -> 0I
         | Some(i) -> i
+
+    let rec feedRobo robo list =
+        match list with
+        | [] -> robo
+        | hh :: tt ->
+            match robo with
+            | Message(_, r) -> feedRobo r list
+            | Waiting(f) -> feedRobo (f hh) tt
+            | _ -> robo
+
+    let feedAscii (str: seq<char>) robo =
+        List.ofSeq str
+        |> List.map (int >> bigint)
+        |> feedRobo robo
 
     let getPositions modes indexes (array: Map<int, bigint>) =
         let iModes =
