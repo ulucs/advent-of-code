@@ -32,8 +32,7 @@ module Utils =
                 b
 
     let (|Prefix|_|) (p: string) (s: string) =
-        if s.StartsWith(p) then Some(s.Substring(p.Length))
-        else None
+        if s.StartsWith(p) then Some(s.Substring(p.Length)) else None
 
     let getInputRaw day =
         Http.RequestString
@@ -41,7 +40,7 @@ module Utils =
 
     let getInput = getInputRaw >> trimString
 
-    let getIntcode day = (getInput day).Split(",") |> Array.map (int >> bigint)
+    let getIntcode day = (getInput day).Split(",") |> Array.map (System.Numerics.BigInteger.Parse)
 
     let getInputLines day =
         getInput day
