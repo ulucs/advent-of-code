@@ -12,53 +12,51 @@ module Day23 =
             match OpcodeMachine.build intructions [] input with
             | Waiting(f) -> f i)
 
-    let feedMsg msg machine =
-        match msg, machine with
-        | (None, Waiting(f)) -> f -(1I)
-        | (Some([ x; y ])), Waiting(f) ->
-            match f x with
-            | Waiting(f) -> f y
-        | (_, s) ->
-            printfn "%A" s
-            Halted
-
     let withDefFind d k m =
         match Map.tryFind k m with
         | Some(v) -> v
         | None -> d
 
+    let msgFromQueue queue =
+        let q = Map.filter (fun _ v -> List.isEmpty v |> not) queue
+        Map.map (fun _ v -> List.head v) q, Map.map (fun _ v -> List.tail v) q
+
+    let queueMsgs msgs queue =
+        List.concat msgs
+        |> List.chunkBySize 3
+        |> List.fold (fun q [ d; x; y ] -> Map.add d (List.append (withDefFind [] d q) [ [ x; y ] ]) q) queue
+
     let silver input =
-        let mutable network = machines input
-        let mutable natMsg = [ -1I; -1I ]
-        let mutable msgQueue = Map.empty
-        while true do
+        Seq.unfold (fun (msgQueue, network) ->
             let newMsgs, machines = List.map getMessages network |> List.unzip
-            for l in newMsgs do
-                match l with
-                | [] -> ()
-                | ll ->
-                    for [ d; x; y ] in List.chunkBySize 3 ll do
-                        if d = 255I then natMsg <- [ x; y ]
-                        msgQueue <- Map.add d (List.append (withDefFind [] d msgQueue) [ [ x; y ] ]) msgQueue
+            let newQ = queueMsgs newMsgs msgQueue
+            let qh, qt = msgFromQueue newQ
+            let newNet = List.mapi (fun i m -> withDefFind [ -(1I) ] (bigint i) qh |> feedRobo m) machines
 
-            let heads = Map.map (fun _ v -> List.tryHead v) msgQueue
+            Some(qh, (qt, newNet))) (Map.empty, machines input)
+        |> Seq.pick (Map.tryFind 255I)
 
-            if Map.forall (fun _ v -> v = None) heads && natMsg <> [-1I; -1I] then
-                network <-
-                    List.mapi (fun i m ->
-                        if i = 0 then
-                            printfn "%A" natMsg
-                            let mm = feedMsg (Some(natMsg)) m
-                            natMsg <- [-1I; -1I]
-                            mm
-                        else
-                            m) machines
-            else
-                msgQueue <-
-                    Map.map (fun _ v ->
-                        match v with
-                        | [] -> []
-                        | a :: l -> l) msgQueue
-                network <- List.mapi (fun i m -> feedMsg (withDefFind None (bigint i) heads) m) machines
+    let gold input =
+        let nat0 =
+            [ -(1I)
+              -(1I) ]
+        Seq.unfold (fun (msgQueue, network, nat) ->
+            let newMsgs, machines = List.map getMessages network |> List.unzip
+            let newQ = queueMsgs newMsgs msgQueue
+            let qh, qt = msgFromQueue newQ
+            let natPass = Map.empty = qh && nat <> nat0
 
-    silver input
+            let qn, nnat, passedVal =
+                if natPass
+                then ([ 0I, nat ] |> Map.ofList), nat0, Some(nat)
+                else qh, withDefFind nat 255I qh, None
+
+            let newNet = List.mapi (fun i m -> withDefFind [ -(1I) ] (bigint i) qn |> feedRobo m) machines
+            Some(passedVal, (qt, newNet, nnat))) (Map.empty, machines input, nat0)
+        |> Seq.filter ((<>) None)
+        |> Seq.map (fun v -> v.Value)
+        |> Seq.windowed 2
+        |> Seq.find (fun [| [ _; y1 ]; [ _; y2 ] |] -> y1 = y2)
+
+    printfn "%A" (silver input)
+    printfn "%A" (gold input)
