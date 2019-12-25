@@ -1,5 +1,7 @@
 namespace AoC
 
+open Utils
+
 module Day24 =
     let input =
         Utils.getInputLines 24
@@ -68,20 +70,17 @@ module Day24 =
         + if y = 0 then Map.find (2, 1) outer else 0
         + if y = 4 then Map.find (2, 3) outer else 0
 
-    let thL i l = List.map (fun j -> (i, j)) l
-    let ttL l i = List.map (fun j -> (j, i)) l
-
     let countFromOut loc inner =
         match loc with
-        | 1, 2 -> thL 0 [ 0 .. 4 ]
-        | 3, 2 -> thL 4 [ 0 .. 4 ]
-        | 2, 1 -> ttL [ 0 .. 4 ] 0
-        | 2, 3 -> ttL [ 0 .. 4 ] 4
+        | 1, 2 -> cartesian [0] [ 0 .. 4 ]
+        | 3, 2 -> cartesian [4] [ 0 .. 4 ]
+        | 2, 1 -> cartesian [ 0 .. 4 ] [0]
+        | 2, 3 -> cartesian [ 0 .. 4 ] 4[]]
         |> rev finds inner
         |> List.sum
 
     let zMap =
-        Utils.cartesian [ 0 .. 4 ] [ 0 .. 4 ]
+        cartesian [ 0 .. 4 ] [ 0 .. 4 ]
         |> List.map (fun i -> i, 0)
         |> Map.ofList
 
