@@ -47,7 +47,8 @@ module OpcodeMachine =
         if (arg = x) then Some()
         else None
 
-    let i2bi (i: int) = bigint (i)
+    let i2bi (i: int) = bigint i
+    let bi2i (i: bigint) = int i
 
     let rec getMessagesAndStatus st list =
         match st with
@@ -56,6 +57,10 @@ module OpcodeMachine =
 
     let getMessages st =
         getMessagesAndStatus st []
+
+    let getAsciiMsg st =
+        let msg, newSt = getMessages st
+        (List.map (bi2i >> char) msg |> Array.ofList |> System.String), newSt
 
     let getFromMem ix mem =
         match Map.tryFind ix mem with
@@ -75,6 +80,9 @@ module OpcodeMachine =
         List.ofSeq str
         |> List.map (int >> bigint)
         |> feedRobo robo
+
+    let feedAsciin (str: seq<char>) robo =
+        feedAscii (Seq.append str "\n") robo
 
     let getPositions modes indexes (array: Map<int, bigint>) =
         let iModes =
