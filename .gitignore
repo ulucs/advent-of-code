@@ -5,6 +5,6 @@ Debug
 obj
 bigboi
 session.cookie
-inputs
+*.txt
 dist
 dist-newstyle
