@@ -16,7 +16,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 executable advent-of-code
-  main-is:             Day02.hs
+  main-is:             Day03.hs
   other-modules:       Utils
   -- other-extensions:    
   build-depends:       base >=4.8
