@@ -6,3 +6,5 @@ module Utils where
     getInput day = readFile $ "inputs/" ++ day ++ ".txt" 
     getInputLines = fmap lines . getInput
     getInputNums = fmap (map (read :: String -> Int)) . getInputLines
+
+    countEl x = length . filter (x==)
