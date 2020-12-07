@@ -2,7 +2,7 @@ module Main where
 import Utils
 import Data.Map (fromList, member, delete, (!), keys, toList)
 import Text.ParserCombinators.Parsec
-import Text.Regex.TDFA
+import Text.Regex.PCRE
 
 passList = sepEndBy passport ssep
 passport = sepBy pair esep
