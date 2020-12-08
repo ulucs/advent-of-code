@@ -7,7 +7,7 @@ import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 
 parseInp = map (rvals . splitOn " " . filter ('+' /=))
-  where rvals (a:(b:_)) = (a, read b :: Int)
+  where rvals [a, b] = (a, read b :: Int)
 
 cmds = Map.fromList [
     ("nop", \ x -> \ (a, s) -> (a, s+1)),
@@ -26,7 +26,7 @@ machine st visited ls or
           | otherwise = ins
 
 silver ls = machine (0, 0) Set.empty (parseInp ls)
-gold ls = filter isLeft $ map (silver ls) jmpIxs
+gold ls = find isLeft $ map (silver ls) jmpIxs
   where jmpIxs = findIndices (("jmp" ==) . fst) (parseInp ls)
 
 main = do
