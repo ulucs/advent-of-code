@@ -7,7 +7,7 @@ psums [] = []
 psums (x:xs) = map (x+) xs ++ psums xs
 
 window i xs
-    | l == i = [xs]
+    | l <= i = [xs]
     | l > i = (take i xs):(window i $ tail xs)
     where l = length xs
 
@@ -19,13 +19,14 @@ silver ns = fst <$> find (uncurry notElem) pairs
         nsums = map psums $ window 25 ns
 
 sumsearch st ed sm xs
+  | ed >= length xs = Nothing
   | lsum > sm = sumsearch (st+1) ed sm xs
   | lsum < sm = sumsearch st (ed+1) sm xs
-  | lsum == sm = (maximum arr, minimum arr)
+  | lsum == sm = Just (maximum arr, minimum arr)
   where lsum = sum arr
         arr = take (ed-st) $ drop st xs
 
-gold s ls = uncurry (+) $ sumsearch 0 0 s ls
+gold s ls = uncurry (+) <$> sumsearch 0 0 s ls
 
 main = do
     ls <- mapi <$> Utils.getInputLines "9"
