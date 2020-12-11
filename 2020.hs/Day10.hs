@@ -20,6 +20,6 @@ mCountWays = (map countWays [0 ..] !!)
 gold = product . map (mCountWays . length) . splitOn [3] . deltas
 
 main = do
-    ls <- map parseln <$> Utils.getInputLines "10"
+    ls <- map parseln <$> Utils.getInputLines "10bb"
     print $ silver ls
     print $ gold ls

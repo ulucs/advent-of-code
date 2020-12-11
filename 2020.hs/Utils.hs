@@ -8,3 +8,12 @@ module Utils where
     getInputNums = fmap (map (read :: String -> Int)) . getInputLines
 
     countEl x = length . filter (x==)
+
+    shift (a, (b, c)) = ((a, b), c)
+    shiftEach (a, xs) = zip [a, a..] xs
+    dist (a, b) (x, y) = max (abs (a - x)) (abs (b - y))
+    sum2 (a, b) (x, y) = (a+x, b+y)
+    prdSc a (x, y) = (a*x, a*y)
+
+    cartesian [] ys = []
+    cartesian (x:xs) ys = shiftEach (x, ys) ++ cartesian xs ys
