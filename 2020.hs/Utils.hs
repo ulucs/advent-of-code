@@ -11,7 +11,8 @@ module Utils where
 
     shift (a, (b, c)) = ((a, b), c)
     shiftEach (a, xs) = zip [a, a..] xs
-    dist (a, b) (x, y) = max (abs (a - x)) (abs (b - y))
+    distSup (a, b) (x, y) = max (abs (a - x)) (abs (b - y))
+    dist1 (a, b) (x, y) = (abs (a - x)) + (abs (b - y))
     sum2 (a, b) (x, y) = (a+x, b+y)
     prdSc a (x, y) = (a*x, a*y)
 
