@@ -10,9 +10,8 @@ dirs = "NESW"
 shifts = ((Map.fromList [('R', 1), ('L', -1)]) Map.!)
 dir2tup = ((Map.fromList [('E', (1,0)), ('W', (-1,0)), ('N', (0,1)), ('S', (0,-1))]) Map.!)
 
-rotate (x, y) 90 = (y, -x)
-rotate (x, y) 180 = (-x, -y)
-rotate (x, y) 270 = (-y, x)
+rotate (x, y) 0 = (x, y)
+rotate (x, y) deg = rotate (y, -x) $ mod (deg - 90) 360
 
 cdir (mv, deg) dt
   | mv == 'F' = (dt, dir2tup dt)
@@ -35,7 +34,7 @@ gold inp = dist1 (0, 0) loc
     move (loc, wpLoc) (mv, a)
       | mv == 'F' = (sum2 loc $ prdSc a wpLoc, wpLoc)
       | mv `elem` dirs = (loc, sum2 wpLoc $ prdSc a $ dir2tup mv)
-      | otherwise = (loc, rotate wpLoc $ (`mod` 360) $ a * shifts mv)
+      | otherwise = (loc, rotate wpLoc $ a * shifts mv)
 
 main = do
     inp <- parseInp <$> Utils.getInputLines "12"
