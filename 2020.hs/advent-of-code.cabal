@@ -16,7 +16,7 @@ build-type:          Simple
 cabal-version:       >=2.0
 
 executable advent-of-code
-  main-is:             Day12.hs
+  main-is:             Day13.hs
   other-modules:       Utils
   -- other-extensions:    
   build-depends:       base >=4.8
@@ -27,5 +27,6 @@ executable advent-of-code
                   ,    containers
                   ,    regex-pcre
                   ,    parsec
+                  ,    data-ordlist
   -- hs-source-dirs:      
   default-language:    Haskell2010
