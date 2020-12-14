@@ -3,7 +3,6 @@ import Utils
 import Text.Read
 import Data.List
 import Data.List.Split
-import Debug.Trace
 import qualified Data.Map.Strict as Map
 
 parseMask :: String -> [Maybe Integer]
@@ -61,4 +60,5 @@ gold = sum . Map.elems . applyLinesG Map.empty []
 
 main = do
   inp <- Utils.getInputLines "14"
+  print $ silver inp
   print $ gold inp
