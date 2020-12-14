@@ -16,5 +16,8 @@ module Utils where
     sum2 (a, b) (x, y) = (a+x, b+y)
     prdSc a (x, y) = (a*x, a*y)
 
+    map2 f xs ys = map (uncurry f) $ zip xs ys
+    mapcart f xs ys = map (uncurry f) $ cartesian xs ys
+
     cartesian [] ys = []
     cartesian (x:xs) ys = shiftEach (x, ys) ++ cartesian xs ys
