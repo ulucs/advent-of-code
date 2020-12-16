@@ -7,7 +7,8 @@ module Utils where
     getInputLines = fmap lines . getInput
     getInputNums = fmap (map (read :: String -> Int)) . getInputLines
 
-    countEl x = length . filter (x==)
+    countOn f = length . filter f
+    countEl x = countOn (x ==)
 
     shift (a, (b, c)) = ((a, b), c)
     shiftEach (a, xs) = zip [a, a..] xs
@@ -16,8 +17,12 @@ module Utils where
     sum2 (a, b) (x, y) = (a+x, b+y)
     prdSc a (x, y) = (a*x, a*y)
 
+    tuplify [a, b] = (a, b)
+
     map2 f xs ys = map (uncurry f) $ zip xs ys
     mapcart f xs ys = map (uncurry f) $ cartesian xs ys
+    -- transpose xs = [map (!! i) xs | i <- [0..(l-1)]]
+      -- where l = length $ head xs
 
     cartesian [] ys = []
     cartesian (x:xs) ys = shiftEach (x, ys) ++ cartesian xs ys
