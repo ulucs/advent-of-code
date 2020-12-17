@@ -6,9 +6,6 @@ inp = [1,0,15,2,10,13]
 
 initMap inp = Map.fromList $ zip inp $ map (:[]) [1..]
 
-rep 0 _ = id
-rep n f = rep (n-1) f . f
-
 speak (num, mapn, turn) = (next, umap, turn+1)
   where umap = Map.insertWith f next [turn] mapn
         next = say $ mapn Map.! num

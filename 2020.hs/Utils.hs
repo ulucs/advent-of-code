@@ -9,12 +9,17 @@ module Utils where
 
     countOn f = length . filter f
     countEl x = countOn (x ==)
+    
+    rep 0 _ = id
+    rep n f = rep (n-1) f . f
 
     shift (a, (b, c)) = ((a, b), c)
-    shiftEach (a, xs) = zip [a, a..] xs
+    shiftEach (a, xs) = zip (repeat a) xs
     distSup (a, b) (x, y) = max (abs (a - x)) (abs (b - y))
     dist1 (a, b) (x, y) = (abs (a - x)) + (abs (b - y))
     sum2 (a, b) (x, y) = (a+x, b+y)
+    sum3 (a, b, c) (x, y, z) = (a+x, b+y, c+z)
+    sum4 (a,b,c,d) (x,y,z,q) = (a+x,b+y,c+z,d+q)
     prdSc a (x, y) = (a*x, a*y)
 
     tuplify [a, b] = (a, b)
@@ -26,3 +31,6 @@ module Utils where
 
     cartesian [] ys = []
     cartesian (x:xs) ys = shiftEach (x, ys) ++ cartesian xs ys
+
+    cartl [] ys = []
+    cartl (x:xs) ys = map (x:) ys ++ cartl xs ys
