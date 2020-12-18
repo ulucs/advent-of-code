@@ -1,0 +1,7 @@
+-- Calc.cf: A grammar for arithmetical expressions
+ELines.  Line    ::=     Exp "\n" Line1 ;
+rules Line1 ::= Exp | Line | "";
+EMul. 	Exp 	::= 	Exp 	"*" 	Exp1 ;
+EAdd. 	Exp1 	::= 	Exp1 	"+" 	Exp2 ;
+EInt. 	Exp2 	::= 	Integer 	;
+coercions Exp 2 ;
