@@ -22,10 +22,19 @@ module Utils where
     sum3 (a, b, c) (x, y, z) = (a+x, b+y, c+z)
     sum4 (a,b,c,d) (x,y,z,q) = (a+x,b+y,c+z,d+q)
     prdSc a (x, y) = (a*x, a*y)
+    fst3 (a, _, _) = a
+    snd3 (_, b, _) = b
+    trd3 (_, _, c) = c
+    exmid (a, _, c) = (a, c)
 
     tuplify [a, b] = (a, b)
 
+    dropl n = reverse . drop n . reverse
+
     map2 f xs ys = map (uncurry f) $ zip xs ys
+    mapfst f = map (\ (x, y) -> (f x, y))
+    mapsnd f = map (\ (x, y) -> (x, f y))
+    zipf f x = zip x $ map f x
     mapcart f xs ys = map (uncurry f) $ cartesian xs ys
     -- transpose xs = [map (!! i) xs | i <- [0..(l-1)]]
       -- where l = length $ head xs
