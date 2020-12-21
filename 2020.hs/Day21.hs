@@ -1,10 +1,7 @@
 module Main where
 import Utils
-import qualified Data.Map.Strict as Map
--- import qualified Data.Set as Set
 import Data.List
 import Data.List.Split
-import Debug.Trace
 
 parseInp inp = (splitOn ", " ajs, splitOn " " ings)
   where ajs = drop 9 $ dropl 1 al
