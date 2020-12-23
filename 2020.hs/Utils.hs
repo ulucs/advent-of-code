@@ -1,6 +1,6 @@
+{-# LANGUAGE BangPatterns #-}
 module Utils where
     import System.Process
-    import qualified Data.Map.Strict as Map
 
     dlInput day = callCommand $ "curl 'https://adventofcode.com/2020/day/" ++ day ++ "/input' -b $(cat ../session.cookie) > inputs/" ++ day ++ ".txt"
     
@@ -11,8 +11,8 @@ module Utils where
     countOn f = length . filter f
     countEl x = countOn (x ==)
     
-    rep 0 _ = id
-    rep n f = rep (n-1) f . f
+    rep 0 _ x = x
+    rep n f !x = rep (n-1) f $ f x
 
     shift (a, (b, c)) = ((a, b), c)
     shiftEach (a, xs) = zip (repeat a) xs
@@ -39,8 +39,8 @@ module Utils where
     -- transpose xs = [map (!! i) xs | i <- [0..(l-1)]]
       -- where l = length $ head xs
     
-    withInd = Map.fromList . zip [0..]
-    withInd2 = Map.fromList . concat . map (map shift . shiftEach) . zip [0..] . map (zip [0..])
+    withInd = zip [0..]
+    withInd2 = concat . map (map shift . shiftEach) . zip [0..] . map (zip [0..])
 
     cartesian [] ys = []
     cartesian (x:xs) ys = shiftEach (x, ys) ++ cartesian xs ys
