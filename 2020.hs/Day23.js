@@ -10,7 +10,7 @@ function iterate(f, n, x) {
 function shuffle(x, l) {
     const next = v => l[v];
     const findsv = (v, pck) => {
-        const mxv = 9;
+        const mxv = 1000000;
         let i = v == 1 ? mxv : v-1;
         while (pck.includes(i)) {
             i = i == 1 ? mxv : i-1;
