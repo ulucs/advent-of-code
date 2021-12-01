@@ -8,3 +8,5 @@ session.cookie
 *.txt
 dist
 dist-newstyle
+build
+inputs
