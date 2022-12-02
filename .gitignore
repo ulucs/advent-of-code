@@ -10,3 +10,9 @@ dist
 dist-newstyle
 build
 inputs
+
+# clojure repl stuff
+.nrepl-port
+.lsp
+.clj-kondo
+.calva
