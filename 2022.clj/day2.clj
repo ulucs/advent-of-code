@@ -1,7 +1,9 @@
-(ns day2
-  (:require [clojure.string :as str]))
+(load-file "2022.clj/utils.clj")
 
-(def input (-> (slurp "2022.clj/inputs/2.txt") (str/split #"\n")))
+(ns day2
+  (:require [utils :as u]))
+
+(def input (u/read-input-lines 2))
 
 (defn eval-game [ips]
   (case ips
