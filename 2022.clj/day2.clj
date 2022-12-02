@@ -3,6 +3,8 @@
 (ns day2
   (:require [utils :as u]))
 
+(u/dl-input 2)
+
 (def input (u/read-input-lines 2))
 
 (defn eval-game [ips]
