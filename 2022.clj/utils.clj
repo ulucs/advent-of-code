@@ -15,3 +15,5 @@
 (defn read-input-lines [day]
   (-> (read-input-raw day)
       (str/split #"\n")))
+
+(defn solve [[s g] inp] [(s inp) (g inp)])
