@@ -16,4 +16,10 @@
   (-> (read-input-raw day)
       (str/split #"\n")))
 
+(defn windowed [n coll]
+  (->> coll
+       (repeat n)
+       (map-indexed (fn [i l] (drop i l)))
+       (apply map list)))
+
 (defn solve [[s g] inp] [(s inp) (g inp)])
