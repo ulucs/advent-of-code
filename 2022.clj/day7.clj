@@ -4,7 +4,7 @@
   (:require [clojure.string :as str]))
 
 (u/dl-input 7)
-(def input (u/read-input-lines 7))
+(def input (u/read-input-lines "bigboy"))
 
 (defrecord ParserState [items currentDir])
 
@@ -22,7 +22,8 @@
 
 (defn parseItem [line state]
   (let [[sd name] (str/split line #" ")]
-    (assoc-in state (concat [:items] (gp (get state :currentDir)) [name]) (parse-long sd))))
+    (if (= "dir" sd) state
+        (assoc-in state (concat [:items] (gp (get state :currentDir)) [name]) (parse-long sd)))))
 
 (defn parse [state line]
   (if (str/starts-with? line "$")
@@ -37,15 +38,8 @@
   (if (map? input)
     (cons (sizeOf input) (map rec-size (vals input))) 0))
 
-(def fs (get-in (reduce parse (ParserState. {} "/") input) [:items]))
-
-(->> (rec-size fs)
-     (flatten)
-     (filter (partial >= 100000))
-     (reduce +))
-
-(->> (rec-size fs)
-     (flatten)
-     (filter #(>= 40000000 (- (sizeOf fs) %)))
-     (reduce min))
-
+(time
+ (let [fs (get-in (reduce parse (ParserState. {} "/") input) [:items])
+       sizes (flatten (rec-size fs))]
+   [(reduce + (filter (partial >= 100000) sizes))
+    (reduce min (filter #(>= 40000000 (- (sizeOf fs) %)) sizes))]))
