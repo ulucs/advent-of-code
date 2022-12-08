@@ -4,7 +4,7 @@
   (:require [clojure.string :as str]))
 
 (u/dl-input 7)
-(def input (u/read-input-lines "bigboy"))
+(def input (u/read-input-lines 7))
 
 (defrecord ParserState [items currentDir])
 
