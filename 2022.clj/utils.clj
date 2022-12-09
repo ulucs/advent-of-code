@@ -23,3 +23,5 @@
        (apply map list)))
 
 (defn solve [[s g] inp] [(s inp) (g inp)])
+
+(defn unit [x] (if (zero? x) 0 (if (pos? x) 1 -1)))
