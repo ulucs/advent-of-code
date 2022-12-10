@@ -7,26 +7,27 @@
 (def input (map #(str/split % #" ") (u/read-input-lines 10)))
 
 (defrecord ProgramState [cycle x])
-(defn asof [hist c] (assoc (last (take-while #(<= (:cycle %) c) hist)) :cycle c))
 
-(defn apply-instr [state [op arg]]
-  (case op
-    "noop" (assoc state :cycle (inc (:cycle state)))
-    "addx" (assoc state :x (+ (:x state) (parse-long arg))
-                  :cycle (+ 2 (:cycle state)))))
+(defn apply-instr [p-states [op arg]]
+  (let [state (last p-states)]
+    (case op
+      "noop" [(assoc state :cycle (inc (:cycle state)))]
+      "addx" [(assoc state :cycle (inc (:cycle state)))
+              (assoc state :x (+ (:x state) (parse-long arg))
+                     :cycle (+ 2 (:cycle state)))])))
 
-(defn draw [state]
-  (if (>= 1 (Math/abs (- (:x state) (mod (- (:cycle state) 1) 40)))) "#" "."))
+(defn draw [{x :x c :cycle}]
+  (if (>= 1 (Math/abs (- x (mod (- c 1) 40)))) "#" "."))
 
-(def program-hist (reductions apply-instr (ProgramState. 1 1) input))
+(def program-hist (flatten (reductions apply-instr [(ProgramState. 1 1)] input)))
 
-(->> (range 20 221 40)
-     (map (partial asof program-hist))
-     (map #(* (:x %) (:cycle %)))
+(->> program-hist
+     (filter (fn [{c :cycle}] (some #{c} [20 60 100 140 180 220])))
+     (map (fn [{c :cycle x :x}] (* c x)))
      (reduce +))
 
-(->> (range 1 241)
-     (map (partial asof program-hist))
+(->> program-hist
+     (take 240)
      (map draw)
      (partition 40)
      (map (partial apply str)))
