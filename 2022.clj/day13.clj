@@ -11,8 +11,8 @@
         (nil? h1) true
         (nil? h2) false
         (and (number? h1) (number? h2)) (if (= h1 h2) (recur t1 t2) (< h1 h2))
-        (and (seqable? h1) (not (seqable? h2))) (compr? (cons h1 t1) (cons [h2] t2))
-        (and (not (seqable? h1)) (seqable? h2)) (compr? (cons [h1] t1) (cons h2 t2))
+        (and (seqable? h1) (not (seqable? h2))) (recur (cons h1 t1) (cons [h2] t2))
+        (and (not (seqable? h1)) (seqable? h2)) (recur (cons [h1] t1) (cons h2 t2))
         :else (let [[hh1 & th1] h1 [hh2 & th2] h2]
                 (recur (cons hh1 (cons th1 t1)) (cons hh2 (cons th2 t2))))))
 
