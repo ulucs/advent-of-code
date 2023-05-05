@@ -1,7 +1,7 @@
-#[path = "days/day2.rs"]
+#[path = "days/day3.rs"]
 mod day;
 
 fn main() {
-    println!("silver: {}", day::silver());
-    println!("gold: {}", day::gold());
+    println!("silver: {:?}", day::silver());
+    println!("gold: {:?}", day::gold());
 }
