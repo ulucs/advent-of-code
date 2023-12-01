@@ -33,11 +33,11 @@ valRule _ [[]] _ = False
 valRule rs rr (s:ss)
   | passed == [] = False
   | otherwise = valRule rs passed ss
-  where rules = uncurry zip $ ruleUncons rs (Ropts rr)
+  where rules = uncurry zip $  ruleUncons rs (Ropts rr)
         passed = nub $ map snd $ filter (valsr s) rules
-        valsr s (Lit a, _) = a == s 
+        valsr s (Lit a, _) = a == (s) 
 
-silver inp = countOn (valRule rules [[Ref 0]]) strs
+silver inp = filter (valRule rules [[Ref 0]]) strs
   where (rules, strs) = parseInp inp
 
 gold inp = countOn (valRule rules [[Ref 0]]) strs
@@ -45,6 +45,6 @@ gold inp = countOn (valRule rules [[Ref 0]]) strs
         ninp = "8: 42 | 42 8\n11: 42 31 | 42 11 31\n" ++ inp
 
 main = do
-    inp <- Utils.getInput "19"
+    inp <- Utils.getInput "19c"
     print $ silver inp
-    print $ gold inp
+    
