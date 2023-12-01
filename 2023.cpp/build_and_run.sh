@@ -1,0 +1,1 @@
+pushd build; cmake ..; make; ./output; popd

@@ -1,0 +1,1 @@
+curl "https://adventofcode.com/2023/day/$1/input" -b $(cat ../session.cookie) > "inputs/$1.txt"
