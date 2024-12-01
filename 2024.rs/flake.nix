@@ -46,7 +46,9 @@
             overlays = [
               (import inputs.rust-overlay)
               (self: super: assert !(super ? rust-toolchain); rec {
-                rust-toolchain = super.rust-bin.stable.latest.default;
+                rust-toolchain = super.rust-bin.stable.latest.default.override {
+                  extensions = [ "rust-src" ];
+                };
 
                 # buildRustCrate/crate2nix depend on this.
                 rustc = rust-toolchain;
