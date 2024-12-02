@@ -1,24 +1,16 @@
 use std::{collections::HashMap, fs, iter::zip};
 
-fn input() -> (Vec<i32>, Vec<i32>) {
+pub fn input(_: Option<String>) -> (Vec<i32>, Vec<i32>) {
     fs::read_to_string("inputs/1.txt")
         .expect("Something went wrong reading the file")
         .lines()
-        .map(|line| {
-            line.split_ascii_whitespace()
-                .map(|i| i.parse::<i32>().expect("Value too big for i32"))
-                .collect()
-        })
-        .map(|nums: Vec<i32>| (*nums.first().unwrap(), *nums.last().unwrap()))
-        .fold((vec![], vec![]), |(mut l1, mut l2), (n1, n2)| {
-            l1.push(n1);
-            l2.push(n2);
-            (l1, l2)
-        })
+        .map(|line| line.split_once("   ").unwrap())
+        .map(|(a, b)| (a.parse::<i32>().unwrap(), b.parse::<i32>().unwrap()))
+        .unzip()
 }
 
-pub fn silver() -> i32 {
-    let mut lists = input();
+pub fn silver(input: &(Vec<i32>, Vec<i32>)) -> i32 {
+    let mut lists = input.clone();
 
     lists.0.sort();
     lists.1.sort();
@@ -31,8 +23,7 @@ fn count_items(mut cts: HashMap<i32, i32>, it: &i32) -> HashMap<i32, i32> {
     cts
 }
 
-pub fn gold() -> i32 {
-    let (left, right) = input();
+pub fn gold((left, right): &(Vec<i32>, Vec<i32>)) -> i32 {
     let count_left = left.iter().fold(HashMap::new(), count_items);
     let count_right = right.iter().fold(HashMap::new(), count_items);
 
