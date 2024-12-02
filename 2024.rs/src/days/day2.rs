@@ -17,17 +17,9 @@ pub fn silver(input: &Vec<Vec<i32>>) -> usize {
     input
         .iter()
         .filter(|nums| {
-            let diffs: Vec<i32> = nums
-                .iter()
-                .zip(nums.iter().skip(1))
-                .map(|(a, b)| a - b)
-                .collect();
+            let diffs: Vec<i32> = nums.windows(2).map(|ns| ns[0] - ns[1]).collect();
 
-            diffs.iter().all(|d| d.abs() <= 3)
-                && diffs
-                    .iter()
-                    .zip(diffs.iter().skip(1))
-                    .all(|(d1, d2)| d1 * d2 > 0)
+            diffs.iter().all(|d| d.abs() <= 3) && diffs.windows(2).all(|ds| ds[0] * ds[1] > 0)
         })
         .count()
 }
@@ -39,17 +31,9 @@ pub fn gold(input: &Vec<Vec<i32>>) -> usize {
             nums.iter().enumerate().any(|(i, _)| {
                 let (_, nnums): (Vec<usize>, Vec<i32>) =
                     nums.iter().enumerate().filter(|(j, _)| i != *j).unzip();
-                let diffs: Vec<i32> = nnums
-                    .iter()
-                    .zip(nnums.iter().skip(1))
-                    .map(|(a, b)| a - b)
-                    .collect();
+                let diffs: Vec<i32> = nnums.windows(2).map(|ns| ns[0] - ns[1]).collect();
 
-                diffs.iter().all(|d| d.abs() <= 3)
-                    && diffs
-                        .iter()
-                        .zip(diffs.iter().skip(1))
-                        .all(|(d1, d2)| d1 * d2 > 0)
+                diffs.iter().all(|d| d.abs() <= 3) && diffs.windows(2).all(|ds| ds[0] * ds[1] > 0)
             })
         })
         .count()
