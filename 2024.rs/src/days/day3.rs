@@ -1,4 +1,4 @@
-use regex::{self, Match, Regex};
+use regex::{self, Regex};
 use std::{fs, str::FromStr};
 
 #[derive(Debug, PartialEq, Eq)]
@@ -20,12 +20,6 @@ impl FromStr for Mul {
     }
 }
 
-impl Mul {
-    fn eval(&self) -> i32 {
-        self.0 * self.1
-    }
-}
-
 pub fn input(_: Option<String>) -> String {
     fs::read_to_string("inputs/3.txt")
         .expect("Something went wrong reading the file")
@@ -39,7 +33,7 @@ pub fn silver(input_str: &str) -> i32 {
         .find_iter(input_str)
         .map(|m| m.as_str())
         .flat_map(Mul::from_str)
-        .map(|m| m.eval())
+        .map(|m| m.0 * m.1)
         .sum()
 }
 
@@ -54,15 +48,7 @@ fn comment_out(input: &str) -> Vec<&str> {
 pub fn gold(input_str: &str) -> i32 {
     comment_out(input_str)
         .iter()
-        .map(|str_piece| {
-            Regex::new(r"mul\(\d+,\d+\)")
-                .unwrap()
-                .find_iter(&str_piece)
-                .map(|m: Match| m.as_str())
-                .flat_map(Mul::from_str)
-                .map(|m| m.eval())
-                .sum::<i32>()
-        })
+        .map(|str_piece| silver(&str_piece))
         .sum()
 }
 
