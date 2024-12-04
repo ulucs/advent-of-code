@@ -66,20 +66,12 @@
           packages = {
             rustnix = cargoNix.rootCrate.build;
             default = packages.rustnix;
-
-            inherit (pkgs) rust-toolchain;
-
-            rust-toolchain-versions = pkgs.writeScriptBin "rust-toolchain-versions" ''
-              ${pkgs.rust-toolchain}/bin/cargo --version
-              ${pkgs.rust-toolchain}/bin/rustc --version
-            '';
           };
 
           devShells = {
             default = pkgs.mkShell {
               packages = with pkgs; [
                 rust-toolchain
-                libiconv
               ];
             };
           };

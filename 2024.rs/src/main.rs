@@ -1,6 +1,6 @@
 use day::input;
 
-#[path = "days/day3.rs"]
+#[path = "days/day4.rs"]
 mod day;
 
 fn main() {
