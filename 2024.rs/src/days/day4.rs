@@ -14,8 +14,20 @@ pub fn input(over: Option<String>) -> CharMap {
     .unwrap()
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash)]
-struct Point(i32, i32);
+impl Point {
+    const ALL_DIRS: [Self; 8] = [
+        Self(1, 0),
+        Self(1, 1),
+        Self(0, 1),
+        Self(-1, 1),
+        Self(-1, 0),
+        Self(-1, -1),
+        Self(0, -1),
+        Self(1, -1),
+    ];
+
+    const CROSSMAS: [Self; 2] = [Self(1, 1), Self(1, -1)];
+}
 
 #[derive(Debug, Clone)]
 pub struct CharMap(HashMap<Point, char>);
@@ -34,35 +46,6 @@ impl FromStr for CharMap {
             },
         ))))
     }
-}
-
-impl ops::Mul<Point> for i32 {
-    type Output = Point;
-    fn mul(self, rhs: Point) -> Self::Output {
-        Point(self * rhs.0, self * rhs.1)
-    }
-}
-
-impl ops::Add<Point> for Point {
-    type Output = Point;
-    fn add(self, rhs: Point) -> Self::Output {
-        Point(self.0 + rhs.0, self.1 + rhs.1)
-    }
-}
-
-impl Point {
-    const ALL_DIRS: [Self; 8] = [
-        Self(1, 0),
-        Self(1, 1),
-        Self(0, 1),
-        Self(-1, 1),
-        Self(-1, 0),
-        Self(-1, -1),
-        Self(0, -1),
-        Self(1, -1),
-    ];
-
-    const CROSSMAS: [Self; 2] = [Self(1, 1), Self(1, -1)];
 }
 
 impl CharMap {
