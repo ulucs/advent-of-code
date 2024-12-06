@@ -1,33 +1,38 @@
 use std::{
-    collections::BTreeMap,
+    collections::HashMap,
     fs,
     ops::{self},
     str::FromStr,
 };
 
 pub fn input(over: Option<String>) -> CharMap {
-    CharMap::from_str(&over.or(fs::read_to_string("inputs/4.txt").ok()).unwrap()).unwrap()
+    CharMap::from_str(
+        &over
+            .or(fs::read_to_string("inputs/4.bigboy.txt").ok())
+            .unwrap(),
+    )
+    .unwrap()
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash)]
 struct Point(i32, i32);
 
 #[derive(Debug, Clone)]
-pub struct CharMap(BTreeMap<Point, char>);
+pub struct CharMap(HashMap<Point, char>);
 
 #[derive(Debug)]
 pub struct ParseCharMapErr;
 impl FromStr for CharMap {
     type Err = ParseCharMapErr;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(CharMap(BTreeMap::from_iter(
-            s.lines().enumerate().flat_map(|(row, line)| {
+        Ok(CharMap(HashMap::from_iter(s.lines().enumerate().flat_map(
+            |(row, line)| {
                 line.chars()
                     .enumerate()
                     .map(|(col, c)| (Point(row as i32, col as i32), c))
                     .collect::<Vec<_>>()
-            }),
-        )))
+            },
+        ))))
     }
 }
 
@@ -46,27 +51,23 @@ impl ops::Add<Point> for Point {
 }
 
 impl Point {
-    fn all_directions() -> Vec<Self> {
-        vec![
-            Point(1, 0),
-            Point(1, 1),
-            Point(0, 1),
-            Point(-1, 1),
-            Point(-1, 0),
-            Point(-1, -1),
-            Point(0, -1),
-            Point(1, -1),
-        ]
-    }
+    const ALL_DIRS: [Self; 8] = [
+        Self(1, 0),
+        Self(1, 1),
+        Self(0, 1),
+        Self(-1, 1),
+        Self(-1, 0),
+        Self(-1, -1),
+        Self(0, -1),
+        Self(1, -1),
+    ];
 
-    fn crossmas_dirs() -> Vec<Self> {
-        vec![Self(1, 1), Self(1, -1)]
-    }
+    const CROSSMAS: [Self; 2] = [Self(1, 1), Self(1, -1)];
 }
 
 impl CharMap {
     fn xmas_from_point(&self, start: Point) -> Vec<String> {
-        Point::all_directions()
+        Point::ALL_DIRS
             .iter()
             .filter_map(|&dir| {
                 (0..4)
@@ -77,7 +78,7 @@ impl CharMap {
     }
 
     fn is_mas_center(&self, start: Point) -> bool {
-        Point::crossmas_dirs().iter().all(|&dir| {
+        Point::CROSSMAS.iter().all(|&dir| {
             (-1..=1)
                 .map(|d| self.0.get(&(start + d * dir)))
                 .collect::<Option<String>>()

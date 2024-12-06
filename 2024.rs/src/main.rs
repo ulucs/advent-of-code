@@ -1,6 +1,7 @@
+#![feature(is_sorted)]
 use day::input;
 
-#[path = "days/day4.rs"]
+#[path = "days/day5.rs"]
 mod day;
 
 fn main() {

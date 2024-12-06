@@ -46,7 +46,7 @@
             overlays = [
               (import inputs.rust-overlay)
               (self: super: assert !(super ? rust-toolchain); rec {
-                rust-toolchain = super.rust-bin.stable.latest.default.override {
+                rust-toolchain = super.rust-bin.nightly.latest.default.override {
                   extensions = [ "rust-src" ];
                 };
 
