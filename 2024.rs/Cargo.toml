@@ -6,4 +6,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+itertools = "0.13.0"
+num-integer = "0.1.46"
 regex = "1.11.1"
